@@ -1,0 +1,3953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pro Success Coaching Tool</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --tt-green: #009E60;
+      --tt-green-light: #E6F7F1;
+      --tt-green-dark: #007A4A;
+      --tt-blue: #1A56FF;
+      --tt-text: #1A1A2E;
+      --tt-muted: #6B7280;
+      --tt-border: #E5E7EB;
+      --tt-bg: #F9FAFB;
+      --tt-white: #FFFFFF;
+      --tt-error: #EF4444;
+      --tt-warning: #F59E0B;
+      --tt-tag-unresponsive: #FEF3C7;
+      --tt-tag-unresponsive-text: #92400E;
+      --tt-tag-nonhire: #FEE2E2;
+      --tt-tag-nonhire-text: #991B1B;
+      --tt-tag-shopping: #EDE9FE;
+      --tt-tag-shopping-text: #5B21B6;
+      --tt-tag-cancelled: #FFE4E6;
+      --tt-tag-cancelled-text: #9F1239;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--tt-bg);
+      color: var(--tt-text);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .header {
+      background: var(--tt-white);
+      border-bottom: 2px solid var(--tt-green);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo {
+      width: 32px;
+      height: 32px;
+      background: var(--tt-green);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-logo svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .header-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--tt-text);
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--tt-muted);
+      margin-top: 1px;
+    }
+
+    .header-links {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 11px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-decoration: none;
+      border: 1.5px solid var(--tt-border);
+      color: var(--tt-muted);
+      background: var(--tt-white);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .header-link-btn:hover {
+      border-color: var(--tt-green);
+      color: var(--tt-green-dark);
+      background: var(--tt-green-light);
+    }
+
+    .header-badge {
+      background: var(--tt-green-light);
+      color: var(--tt-green-dark);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── 3-Pane Workspace ───────────────────────────── */
+    .workspace {
+      display: flex;
+      height: calc(100vh - 57px);
+      overflow: hidden;
+      background: var(--tt-bg);
+    }
+
+    .pane {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: auto;
+      box-sizing: border-box;
+    }
+
+    /* Custom scrollbar styling */
+    .pane::-webkit-scrollbar { width: 6px; height: 6px; }
+    .pane::-webkit-scrollbar-track { background: transparent; }
+    .pane::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    .pane::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
+
+    .pane-updates {
+      width: 22%;
+      min-width: 210px;
+      flex-shrink: 0;
+      order: 1;
+      background: var(--tt-white);
+      border-right: 1px solid var(--tt-border);
+    }
+
+    .pane-coaching {
+      flex: 1;
+      min-width: 0;
+      order: 2;
+      background: var(--tt-bg);
+    }
+
+    .pane-case {
+      width: 20%;
+      min-width: 200px;
+      flex-shrink: 0;
+      order: 3;
+      background: var(--tt-white);
+      border-left: 1px solid var(--tt-border);
+    }
+
+    .pane-inner {
+      padding: 18px 16px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      min-width: 0;
+    }
+
+    /* Side panes: never scroll horizontally, just wrap text */
+    .pane-updates, .pane-case { overflow-x: hidden; }
+
+    /* Coaching pane inner should be constrained nicely */
+    .pane-coaching .pane-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }
+
+    .pane-header {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--tt-muted);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--tt-border);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Scenario Selector */
+    .section-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 10px;
+    }
+
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .scenario-btn {
+      background: var(--tt-white);
+      border: 2px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .scenario-btn:hover {
+      border-color: var(--tt-green);
+      background: var(--tt-green-light);
+    }
+
+    .scenario-btn.selected {
+      border-color: var(--tt-green);
+      background: var(--tt-green-light);
+      box-shadow: 0 0 0 1px var(--tt-green);
+    }
+
+    .scenario-btn .s-icon {
+      font-size: 18px;
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .scenario-btn .s-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--tt-text);
+      display: block;
+    }
+
+    .scenario-btn .s-desc {
+      font-size: 10.5px;
+      color: var(--tt-muted);
+      margin-top: 2px;
+      line-height: 1.35;
+    }
+
+    /* Initial Recommendations Panel */
+    .initial-recs { background: var(--tt-white); border: 1.5px solid var(--tt-border); border-radius: 12px; margin-bottom: 20px; overflow: hidden; display: none; }
+    .initial-recs.visible { display: block; }
+    .initial-recs-header { background: var(--tt-green-light); border-bottom: 1.5px solid var(--tt-border); padding: 9px 16px; display: flex; align-items: center; gap: 7px; font-size: 11.5px; font-weight: 700; color: var(--tt-green-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+    .initial-recs-body { display: grid; grid-template-columns: 1fr 1fr; }
+    .rec-col { padding: 13px 14px; border-right: 1.5px solid var(--tt-border); }
+    .rec-col:last-child { border-right: none; }
+    .rec-col-title { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--tt-muted); margin-bottom: 9px; }
+    .rec-reason { display: flex; gap: 7px; margin-bottom: 9px; align-items: flex-start; }
+    .rec-reason-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+    .rec-reason-text { font-size: 11.5px; color: var(--tt-text); line-height: 1.4; }
+    .rec-reason-text strong { font-weight: 700; display: block; color: var(--tt-text); }
+    .rec-check { display: flex; gap: 7px; margin-bottom: 8px; align-items: flex-start; }
+    .rec-check-icon { font-size: 12px; flex-shrink: 0; margin-top: 1px; }
+    .rec-check-text { font-size: 11.5px; color: var(--tt-text); line-height: 1.4; }
+    .rec-check-text strong { font-weight: 700; }
+    .rec-collect-item { font-size: 11.5px; color: var(--tt-text); line-height: 1.4; margin-bottom: 7px; padding-left: 14px; position: relative; }
+    .rec-collect-item::before { content: '→'; position: absolute; left: 0; color: var(--tt-green); font-weight: 700; }
+    @media (max-width: 600px) { .initial-recs-body { grid-template-columns: 1fr; } .rec-col { border-right: none; border-bottom: 1.5px solid var(--tt-border); } .rec-col:last-child { border-bottom: none; } }
+
+    .scenario-btn.selected .s-name {
+      color: var(--tt-green-dark);
+    }
+
+    .check-mark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 18px;
+      height: 18px;
+      background: var(--tt-green);
+      border-radius: 50%;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .check-mark svg { width: 10px; height: 10px; }
+
+    .scenario-btn.selected .check-mark {
+      display: flex;
+    }
+
+    /* Input fields */
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .input-group input {
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--tt-text);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .input-group input:focus {
+      border-color: var(--tt-green);
+    }
+
+    .data-textarea {
+      width: 100%;
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--tt-text);
+      font-family: inherit;
+      resize: vertical;
+      min-height: 130px;
+      outline: none;
+      line-height: 1.6;
+      transition: border-color 0.15s;
+    }
+
+    .data-textarea:focus {
+      border-color: var(--tt-green);
+    }
+
+    .textarea-hint {
+      font-size: 11px;
+      color: var(--tt-muted);
+      margin-top: 5px;
+    }
+
+    /* Generate Button */
+    .generate-btn {
+      width: 100%;
+      margin-top: 16px;
+      background: var(--tt-green);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.15s, transform 0.1s;
+      letter-spacing: 0.2px;
+    }
+
+    .generate-btn:hover:not(:disabled) {
+      background: var(--tt-green-dark);
+    }
+
+    .generate-btn:active:not(:disabled) {
+      transform: scale(0.99);
+    }
+
+    .generate-btn:disabled {
+      background: #9CA3AF;
+      cursor: not-allowed;
+    }
+
+    .generate-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Loading state */
+    .loading-bar {
+      height: 3px;
+      background: var(--tt-border);
+      border-radius: 2px;
+      margin-top: 14px;
+      overflow: hidden;
+      display: none;
+    }
+
+    .loading-bar.active { display: block; }
+
+    .loading-bar-inner {
+      height: 100%;
+      background: var(--tt-green);
+      border-radius: 2px;
+      animation: loadSlide 1.8s ease-in-out infinite;
+      width: 40%;
+    }
+
+    @keyframes loadSlide {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(350%); }
+    }
+
+    .loading-text {
+      text-align: center;
+      font-size: 12px;
+      color: var(--tt-muted);
+      margin-top: 8px;
+      display: none;
+    }
+
+    .loading-text.active { display: block; }
+
+    /* Divider */
+    .divider {
+      border: none;
+      border-top: 1.5px solid var(--tt-border);
+      margin: 22px 0;
+    }
+
+    /* Results */
+    .results-section {
+      display: none;
+    }
+
+    .results-section.visible {
+      display: block;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .results-header h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--tt-text);
+    }
+
+    .scenario-tag {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .tag-unresponsive { background: var(--tt-tag-unresponsive); color: var(--tt-tag-unresponsive-text); }
+    .tag-nonhire { background: var(--tt-tag-nonhire); color: var(--tt-tag-nonhire-text); }
+    .tag-shopping { background: var(--tt-tag-shopping); color: var(--tt-tag-shopping-text); }
+    .tag-cancelled { background: var(--tt-tag-cancelled); color: var(--tt-tag-cancelled-text); }
+
+    .tabs {
+      display: flex;
+      gap: 0;
+      border-bottom: 2px solid var(--tt-border);
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      padding: 9px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tab-btn.active {
+      color: var(--tt-green-dark);
+      border-bottom-color: var(--tt-green);
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: var(--tt-text);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .output-card {
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .output-card-header {
+      background: var(--tt-bg);
+      border-bottom: 1.5px solid var(--tt-border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .output-card-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--tt-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copy-btn {
+      background: none;
+      border: 1.5px solid var(--tt-border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--tt-green);
+      color: var(--tt-green-dark);
+    }
+
+    .copy-btn.copied {
+      background: var(--tt-green-light);
+      border-color: var(--tt-green);
+      color: var(--tt-green-dark);
+    }
+
+    .output-body {
+      padding: 18px;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--tt-text);
+      word-wrap: break-word;
+    }
+    .output-body p { margin: 0 0 10px 0; }
+    .output-body ul { margin: 4px 0 10px 18px; padding: 0; }
+    .output-body li { margin-bottom: 4px; }
+    .output-body .tip-header {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--tt-green-dark);
+      margin: 16px 0 4px 0;
+      border-left: 3px solid var(--tt-green);
+      padding-left: 8px;
+    }
+
+    /* ── Tip Cards ───────────────────────────────────── */
+    .coaching-preamble {
+      background: var(--tt-bg);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+      font-size: 13.5px;
+      line-height: 1.75;
+    }
+    .coaching-preamble p { margin: 0 0 8px 0; }
+    .coaching-preamble p:last-child { margin-bottom: 0; }
+
+    .tip-card {
+      border-radius: 8px;
+      border-left: 4px solid;
+      padding: 14px 16px;
+      margin: 10px 0;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .tip-card.priority-red    { border-color: #EF4444; background: #FEF2F2; }
+    .tip-card.priority-amber  { border-color: #F59E0B; background: #FFFBEB; }
+    .tip-card.priority-green  { border-color: #22C55E; background: #F0FDF4; }
+    .tip-card.priority-goodwill { border-color: var(--tt-green); background: var(--tt-green-light); }
+
+    .tip-card-header {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--tt-text);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tip-card-header .tip-title { flex: 1; min-width: 0; }
+    .tip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .tip-badge.badge-red    { background: #FEE2E2; color: #991B1B; }
+    .tip-badge.badge-amber  { background: #FEF3C7; color: #92400E; }
+    .tip-badge.badge-green  { background: #DCFCE7; color: #166534; }
+    .tip-badge.badge-goodwill { background: var(--tt-green-light); color: var(--tt-green-dark); }
+
+    .tip-card-body {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--tt-text);
+    }
+    .tip-card-body p { margin: 0 0 8px 0; }
+    .tip-card-body p:last-child { margin-bottom: 0; }
+    .tip-card-body ul { margin: 4px 0 8px 18px; padding: 0; }
+    .tip-card-body li { margin-bottom: 3px; }
+    .tip-label {
+      color: var(--tt-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      display: block;
+      margin-top: 8px;
+    }
+    .tip-label:first-child { margin-top: 0; }
+    .tip-transition {
+      font-style: italic;
+      color: var(--tt-muted);
+      font-size: 12.5px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .show-more-btn {
+      display: block;
+      width: 100%;
+      margin: 8px 0 4px;
+      padding: 9px 16px;
+      background: var(--tt-white);
+      border: 1.5px dashed var(--tt-border);
+      border-radius: 8px;
+      color: var(--tt-muted);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+    }
+    .show-more-btn:hover {
+      background: var(--tt-bg);
+      color: var(--tt-green-dark);
+      border-color: var(--tt-green);
+    }
+
+    /* ── Structured Pro Data Form ─────────────────── */
+    .pro-data-form { display: none; }
+    .pro-data-form.visible { display: block; }
+    .pro-fields-section { margin-bottom: 16px; }
+    .pro-fields-header {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; color: var(--tt-green-dark);
+      background: var(--tt-green-light); border: 1.5px solid var(--tt-border);
+      border-radius: 8px 8px 0 0; padding: 7px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .pro-fields-body {
+      border: 1.5px solid var(--tt-border); border-top: none;
+      border-radius: 0 0 8px 8px; padding: 14px 12px;
+      background: var(--tt-white);
+    }
+    .pro-fields-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .pro-field-group { display: flex; flex-direction: column; gap: 4px; }
+    .pro-field-group.span-2 { grid-column: span 2; }
+    .pro-field-label {
+      font-size: 11.5px; font-weight: 600; color: var(--tt-text-muted);
+      display: flex; flex-direction: column; gap: 1px;
+    }
+    .field-hint { font-size: 10.5px; font-weight: 400; color: #9ca3af; }
+    .field-why {
+      display: block; font-size: 10.5px; color: var(--tt-green-dark);
+      background: var(--tt-green-light); border-radius: 4px;
+      padding: 3px 7px; margin-top: 4px; line-height: 1.4;
+    }
+    .pro-field-with-unit { display: flex; align-items: center; gap: 0; }
+    .pro-field-input {
+      flex: 1; padding: 7px 10px; border: 1.5px solid var(--tt-border);
+      border-radius: 6px; font-size: 13px; color: var(--tt-text);
+      background: var(--tt-bg); outline: none; min-width: 0;
+    }
+    .pro-field-input:focus { border-color: var(--tt-green); }
+    .pro-field-input.has-unit { border-radius: 6px 0 0 6px; border-right: none; }
+    .field-unit {
+      padding: 7px 9px; background: var(--tt-green-light);
+      border: 1.5px solid var(--tt-border); border-left: none;
+      border-radius: 0 6px 6px 0; font-size: 12px;
+      color: var(--tt-text-muted); white-space: nowrap;
+    }
+    .pro-field-select {
+      padding: 7px 10px; border: 1.5px solid var(--tt-border);
+      border-radius: 6px; font-size: 13px; color: var(--tt-text);
+      background: var(--tt-bg); outline: none; width: 100%;
+    }
+    .pro-field-select:focus { border-color: var(--tt-green); }
+    .pro-field-textarea {
+      padding: 8px 10px; border: 1.5px solid var(--tt-border);
+      border-radius: 6px; font-size: 13px; color: var(--tt-text);
+      background: var(--tt-bg); outline: none; width: 100%;
+      resize: vertical; min-height: 68px; font-family: inherit; box-sizing: border-box;
+    }
+    .pro-field-textarea:focus { border-color: var(--tt-green); }
+    /* Profile completeness */
+    .pc-actions { display: flex; gap: 6px; }
+    .pc-actions button {
+      font-size: 10.5px; padding: 2px 8px; border-radius: 4px;
+      border: 1.5px solid var(--tt-border); background: var(--tt-white);
+      color: var(--tt-green-dark); cursor: pointer; font-weight: 600;
+    }
+    .pc-actions button:hover { background: var(--tt-green-light); }
+    .pc-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;
+    }
+    .pc-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--tt-text); cursor: pointer;
+      padding: 5px 8px; border-radius: 6px; border: 1.5px solid var(--tt-border);
+      background: var(--tt-bg); transition: background 0.15s;
+    }
+    .pc-item:hover { background: var(--tt-green-light); }
+    .pc-item input[type=checkbox] { accent-color: var(--tt-green); width: 14px; height: 14px; flex-shrink: 0; }
+    @media (max-width: 600px) {
+      .pro-fields-grid { grid-template-columns: 1fr; }
+      .pro-field-group.span-2 { grid-column: span 1; }
+      .pc-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* Profile URL fetch */
+    .profile-url-section {
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+    .profile-url-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .fetch-status {
+      font-size: 11px;
+      color: var(--tt-muted);
+      margin-top: 6px;
+      min-height: 16px;
+    }
+    .profile-preview {
+      display: none;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .profile-chip {
+      background: var(--tt-bg);
+      border: 1px solid var(--tt-border);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      color: var(--tt-text);
+    }
+    .profile-url-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--tt-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    /* Pain Points Summary */
+    .pain-summary {
+      background: #FFF8ED;
+      border: 1.5px solid #FDE68A;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+    }
+
+    .pain-summary-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #92400E;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pain-summary-text {
+      font-size: 13px;
+      color: #78350F;
+      line-height: 1.6;
+    }
+
+    /* Error state */
+    .error-box {
+      background: #FEF2F2;
+      border: 1.5px solid #FCA5A5;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--tt-error);
+      display: none;
+      margin-top: 12px;
+    }
+
+    .error-box.visible { display: block; }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--tt-muted);
+    }
+
+    .empty-state .empty-icon {
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* Reset button */
+    .reset-btn {
+      background: none;
+      border: 1.5px solid var(--tt-border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      cursor: pointer;
+      margin-left: auto;
+      transition: all 0.15s;
+    }
+
+    .reset-btn:hover {
+      border-color: var(--tt-text);
+      color: var(--tt-text);
+    }
+
+    /* Image Upload */
+    .image-upload-zone {
+      border: 2px dashed var(--tt-border);
+      border-radius: 10px;
+      padding: 18px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--tt-white);
+      position: relative;
+    }
+
+    .image-upload-zone:hover,
+    .image-upload-zone.dragover {
+      border-color: var(--tt-green);
+      background: var(--tt-green-light);
+    }
+
+    .image-upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+
+    .upload-icon { font-size: 24px; margin-bottom: 6px; }
+
+    .upload-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tt-muted);
+    }
+
+    .upload-sub {
+      font-size: 11px;
+      color: var(--tt-muted);
+      margin-top: 2px;
+    }
+
+    .image-previews {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .img-thumb {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1.5px solid var(--tt-border);
+      flex-shrink: 0;
+    }
+
+    .img-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .img-thumb-remove {
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      width: 18px;
+      height: 18px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 50%;
+      border: none;
+      color: white;
+      font-size: 11px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      padding: 0;
+    }
+
+    .img-thumb-remove:hover { background: var(--tt-error); }
+
+    /* ── Case Form (Right Pane) ─────────────────────── */
+    .case-field-group { margin-bottom: 12px; }
+    .case-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--tt-muted);
+      margin-bottom: 4px;
+    }
+    .case-input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid var(--tt-border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--tt-text);
+      background: var(--tt-bg);
+      transition: border-color 0.15s;
+      box-sizing: border-box;
+    }
+    .case-input:focus { outline: none; border-color: var(--tt-green); background: #fff; }
+    .case-input[readonly] { color: var(--tt-muted); cursor: default; }
+    .case-textarea {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1.5px solid var(--tt-border);
+      border-radius: 6px;
+      font-size: 13px;
+      color: var(--tt-text);
+      background: var(--tt-bg);
+      resize: vertical;
+      min-height: 72px;
+      transition: border-color 0.15s;
+      box-sizing: border-box;
+      font-family: inherit;
+    }
+    .case-textarea:focus { outline: none; border-color: var(--tt-green); background: #fff; }
+    .case-check-row { display: flex; align-items: center; margin-bottom: 10px; }
+    .case-check-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tt-text);
+      cursor: pointer;
+      user-select: none;
+    }
+    .case-check {
+      width: 15px; height: 15px;
+      accent-color: var(--tt-green);
+      cursor: pointer; flex-shrink: 0;
+    }
+    .case-divider { height: 1px; background: var(--tt-border); margin: 14px 0; }
+    .case-meta {
+      background: var(--tt-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+    .case-meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+    .case-meta-row:last-child { margin-bottom: 0; }
+    .case-meta-label { color: var(--tt-muted); font-weight: 600; flex-shrink: 0; }
+    .case-meta-value { color: var(--tt-text); font-weight: 500; text-align: right; word-break: break-word; }
+    .case-submit-btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--tt-green);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      margin-top: 4px;
+    }
+    .case-submit-btn:hover { background: var(--tt-green-dark); }
+    .case-submit-status { font-size: 12px; text-align: center; margin-top: 8px; min-height: 18px; }
+    .cf-agent-id {
+      background: var(--tt-bg);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      color: var(--tt-text);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .cf-agent-edit-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 11px;
+      opacity: 0.5;
+      padding: 0 2px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .cf-agent-edit-btn:hover { opacity: 1; }
+    .cf-agent-save-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 7px;
+      background: var(--tt-green);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .cf-agent-save-btn:hover { background: var(--tt-green-dark); }
+
+    /* ── Refund Calculator ──────────────────────────── */
+    .refund-calc {
+      margin-top: 20px;
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 14px 14px 16px;
+    }
+    .refund-calc-header {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--tt-text);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .refund-clear-btn {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      background: none;
+      border: 1px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 2px 8px;
+      cursor: pointer;
+      text-transform: none;
+      letter-spacing: 0;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .refund-clear-btn:hover { color: var(--tt-error); border-color: var(--tt-error); }
+    .refund-calc .case-label { color: var(--tt-muted); }
+    .refund-input-wrap {
+      position: relative;
+    }
+    .refund-input-wrap .dollar-sign {
+      position: absolute;
+      left: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 12px;
+      color: var(--tt-muted);
+      pointer-events: none;
+    }
+    .refund-input-wrap input {
+      padding-left: 20px !important;
+    }
+    .refund-result-box {
+      margin-top: 14px;
+      background: var(--tt-bg);
+      border-radius: 8px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .refund-result-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      line-height: 1.3;
+    }
+    .refund-result-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--tt-text);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .refund-result-value.pct-low  { color: #22C55E; }
+    .refund-result-value.pct-mid  { color: #F59E0B; }
+    .refund-result-value.pct-high { color: #EF4444; }
+    /* hide number input spinners */
+    .refund-calc input[type=number]::-webkit-inner-spin-button,
+    .refund-calc input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+    .refund-calc input[type=number] { -moz-appearance: textfield; appearance: textfield; }
+
+    .refund-approval {
+      margin-top: 8px;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      display: none;
+    }
+    .refund-approval.approved   { background: #DCFCE7; color: #15803D; }
+    .refund-approval.needs-mgr  { background: #FEF3C7; color: #92400E; }
+
+    .refund-slack-btn {
+      display: none;
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px;
+      background: #4A154B;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      gap: 6px;
+      align-items: center;
+      justify-content: center;
+    }
+    .refund-slack-btn:hover { background: #611f64; }
+
+    /* ── Approval Request Modal ──────────────────────── */
+    .approval-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .approval-modal-overlay.open { display: flex; }
+    .approval-modal {
+      background: var(--tt-white);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    .approval-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--tt-border);
+    }
+    .approval-modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .approval-modal-close {
+      background: none;
+      border: none;
+      font-size: 18px;
+      cursor: pointer;
+      color: var(--tt-muted);
+      line-height: 1;
+      padding: 2px 6px;
+    }
+    .approval-modal-close:hover { color: var(--tt-text); }
+    .approval-modal-body { padding: 18px 20px; }
+    .approval-modal-summary {
+      background: #FEF3C7;
+      border: 1px solid #FDE68A;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 16px;
+      font-size: 12px;
+      color: #92400E;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .approval-modal-footer {
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--tt-border);
+      display: flex;
+      gap: 8px;
+    }
+    .approval-send-btn {
+      flex: 1;
+      padding: 10px;
+      background: #4A154B;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .approval-send-btn:hover { background: #611f64; }
+    .approval-cancel-btn {
+      padding: 10px 16px;
+      background: var(--tt-bg);
+      color: var(--tt-muted);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .approval-send-status {
+      font-size: 12px;
+      text-align: center;
+      padding: 6px 0 0;
+      min-height: 20px;
+    }
+
+    /* Updates panel */
+    .updates-toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .updates-search {
+      flex: 1;
+      min-width: 180px;
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 13px;
+      color: var(--tt-text);
+      outline: none;
+    }
+
+    .updates-search:focus { border-color: var(--tt-green); }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .filter-pill {
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--tt-muted);
+      transition: all 0.15s;
+    }
+
+    .filter-pill:hover { border-color: var(--tt-green); color: var(--tt-green-dark); }
+    .filter-pill.active { background: var(--tt-green); border-color: var(--tt-green); color: white; }
+
+    .updates-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .update-card {
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-left: 4px solid var(--tt-border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.15s, background 0.2s;
+    }
+
+    .update-card:hover { border-color: #CBD5E1; border-left-color: inherit; }
+
+    /* Status color coding */
+    .update-card.status-unread  { border-left-color: #EF4444; background: #FFF8F8; }
+    .update-card.status-reading { border-left-color: #F59E0B; background: #FFFCF0; }
+    .update-card.status-read    { border-left-color: #22C55E; background: #F6FFF8; }
+
+    .update-card-header {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .update-date {
+      font-size: 11px;
+      color: var(--tt-muted);
+      white-space: nowrap;
+      margin-top: 2px;
+      min-width: 70px;
+    }
+
+    .update-subject {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--tt-text);
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .update-cats {
+      display: flex;
+      gap: 4px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+    }
+
+    .update-cat {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .cat-Product   { background: #DBEAFE; color: #1E40AF; }
+    .cat-Process   { background: #D1FAE5; color: #065F46; }
+    .cat-Policy    { background: #FEF3C7; color: #92400E; }
+    .cat-Experiment{ background: #EDE9FE; color: #5B21B6; }
+    .cat-Tools     { background: #FCE7F3; color: #9D174D; }
+    .cat-People    { background: #F0FDF4; color: #166534; }
+    .cat-Other     { background: #F3F4F6; color: #374151; }
+
+    /* Read/Unread badges */
+    .read-badge { font-size: 9.5px; font-weight: 700; padding: 2px 7px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; flex-shrink: 0; }
+    .read-badge.unread { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+    .read-badge.reading { background: #EDE9FE; color: #5B21B6; border: 1px solid #DDD6FE; }
+    .read-badge.read { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+
+    /* Category filter dropdown */
+    .cat-filter-row { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .cat-filter-label { font-size: 11px; font-weight: 700; color: var(--tt-muted); text-transform: uppercase; letter-spacing: 0.4px; white-space: nowrap; }
+    .cat-filter-select {
+      flex: 1;
+      padding: 5px 8px;
+      border: 1.5px solid var(--tt-border);
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--tt-text);
+      background: var(--tt-white);
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+    .cat-filter-select:focus { outline: none; border-color: var(--tt-green); }
+
+    /* Expand/Collapse toolbar — stacked vertically */
+    .bulk-actions { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+    .bulk-btn {
+      background: var(--tt-white);
+      border: 1px solid var(--tt-border);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+      transition: all 0.15s;
+    }
+    .bulk-btn:hover { border-color: var(--tt-green); color: var(--tt-green-dark); background: var(--tt-green-light); }
+
+    /* Related links */
+    .related-links { margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--tt-border); }
+    .related-links-label { font-size: 11px; font-weight: 700; color: var(--tt-muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+    .related-links a { display: inline-block; font-size: 12px; color: var(--tt-green-dark); text-decoration: underline; margin: 2px 6px 2px 0; word-break: break-all; }
+
+    /* Image button */
+    .img-block { margin: 8px 0; }
+    .img-error-msg { font-size: 11.5px; color: var(--tt-muted); background: #F9FAFB; border: 1px solid var(--tt-border); border-radius: 8px; padding: 10px 14px; display: flex; align-items: center; gap: 8px; }
+
+    .update-chevron {
+      font-size: 11px;
+      color: var(--tt-muted);
+      margin-top: 3px;
+      transition: transform 0.15s;
+      flex-shrink: 0;
+    }
+
+    .update-card.open .update-chevron { transform: rotate(180deg); }
+    .update-card.open .update-subject { font-weight: 700; }
+
+    /* Popup button on each card */
+    .card-popup-btn {
+      background: none;
+      border: 1px solid var(--tt-border);
+      border-radius: 5px;
+      font-size: 11px;
+      padding: 3px 6px;
+      cursor: pointer;
+      color: var(--tt-muted);
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 2px;
+      transition: all 0.15s;
+    }
+    .card-popup-btn:hover { border-color: var(--tt-green); color: var(--tt-green-dark); background: var(--tt-green-light); }
+
+    /* Update detail modal */
+    .update-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+    }
+    .update-modal-overlay.open { display: flex; }
+
+    .update-modal {
+      background: var(--tt-white);
+      border-radius: 12px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 82vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+    }
+
+    .update-modal-header {
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid var(--tt-border);
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .update-modal-meta { flex: 1; min-width: 0; }
+    .update-modal-date { font-size: 11px; color: var(--tt-muted); margin-bottom: 5px; }
+    .update-modal-subject { font-size: 15px; font-weight: 700; color: var(--tt-text); line-height: 1.4; word-wrap: break-word; }
+    .update-modal-close {
+      background: none; border: none; font-size: 18px;
+      color: var(--tt-muted); cursor: pointer; padding: 0;
+      flex-shrink: 0; line-height: 1; margin-top: 1px;
+    }
+    .update-modal-close:hover { color: var(--tt-text); }
+
+    .update-modal-cats {
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--tt-border);
+      display: flex; gap: 5px; flex-wrap: wrap;
+    }
+
+    .update-modal-body {
+      padding: 18px 20px 22px;
+      overflow-y: auto;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: #374151;
+      flex: 1;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    .update-modal-body::-webkit-scrollbar { width: 6px; }
+    .update-modal-body::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 3px; }
+    .update-modal-body h3 { font-size: 14px; font-weight: 700; margin: 12px 0 4px; color: var(--tt-text); }
+    .update-modal-body h4 { font-size: 13px; font-weight: 700; margin: 10px 0 4px; }
+    .update-modal-body p  { margin: 4px 0; }
+    .update-modal-body ul { margin: 6px 0 6px 18px; list-style: disc; }
+    .update-modal-body ol { margin: 6px 0 6px 18px; list-style: decimal; }
+    .update-modal-body li { margin: 3px 0; }
+    .update-modal-body code { background: #F3F4F6; padding: 1px 5px; border-radius: 4px; font-size: 11.5px; font-family: monospace; }
+    .update-modal-body blockquote { border-left: 3px solid var(--tt-green); padding-left: 12px; color: #6B7280; margin: 8px 0; font-style: italic; }
+    .update-modal-body a { color: var(--tt-green-dark); text-decoration: underline; }
+    .update-modal-body strong { font-weight: 700; }
+    .update-modal-body em { font-style: italic; }
+
+    .update-details {
+      display: none;
+      padding: 12px 16px 14px;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #374151;
+      border-top: 1px solid var(--tt-border);
+      word-break: break-word;
+    }
+
+    .update-card.open .update-details { display: block; }
+
+    /* Rich content rendering */
+    .update-details h3 { font-size: 14px; font-weight: 700; margin: 12px 0 4px; color: var(--tt-text); }
+    .update-details h4 { font-size: 13px; font-weight: 700; margin: 10px 0 4px; color: var(--tt-text); }
+    .update-details h5 { font-size: 12.5px; font-weight: 700; margin: 8px 0 3px; color: var(--tt-text); }
+    .update-details p  { margin: 4px 0; }
+    .update-details ul { margin: 6px 0 6px 18px; padding: 0; list-style: disc; }
+    .update-details ol { margin: 6px 0 6px 18px; padding: 0; list-style: decimal; }
+    .update-details li { margin: 3px 0; }
+    .update-details code { background: #F3F4F6; padding: 1px 5px; border-radius: 4px; font-size: 11.5px; font-family: monospace; }
+    .update-details blockquote { border-left: 3px solid var(--tt-green); padding-left: 12px; color: #6B7280; margin: 8px 0; font-style: italic; }
+    .update-details a { color: var(--tt-green-dark); text-decoration: underline; }
+    .update-details strong { font-weight: 700; }
+    .update-details em { font-style: italic; }
+    .update-details u { text-decoration: underline; }
+    .img-placeholder { display: inline-flex; align-items: center; gap: 5px; background: #F3F4F6; border: 1px solid var(--tt-border); border-radius: 6px; padding: 4px 10px; font-size: 11px; color: var(--tt-muted); margin: 4px 0; }
+    .img-btn { display: inline-flex; align-items: center; gap: 5px; background: #EFF6FF; border: 1.5px solid #BFDBFE; border-radius: 6px; padding: 5px 12px; font-size: 11.5px; font-weight: 600; color: #1E40AF; cursor: pointer; margin: 4px 0; transition: all 0.15s; text-decoration: none; }
+    .img-btn:hover { background: #DBEAFE; border-color: #93C5FD; color: #1E40AF; }
+    /* Image lightbox */
+    #imgModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.82); z-index: 9999; padding: 24px; overflow: auto; }
+    #imgModal.open { display: flex; align-items: center; justify-content: center; }
+    .img-modal-inner { position: relative; max-width: 92vw; max-height: 88vh; }
+    #imgModalImg { max-width: 100%; max-height: 80vh; border-radius: 10px; display: block; object-fit: contain; background: #fff; }
+    #imgModalClose { position: absolute; top: -36px; right: 0; background: none; border: none; color: white; font-size: 26px; cursor: pointer; line-height: 1; padding: 0; }
+    #imgModalCaption { color: #D1D5DB; font-size: 12px; text-align: center; margin-top: 8px; }
+    #imgModalError { color: #FCA5A5; font-size: 13px; text-align: center; padding: 20px; display: none; }
+
+    .load-more-btn {
+      width: 100%;
+      background: var(--tt-white);
+      border: 1.5px solid var(--tt-border);
+      border-radius: 10px;
+      padding: 11px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--tt-muted);
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.15s;
+    }
+
+    .load-more-btn:hover { border-color: var(--tt-green); color: var(--tt-green-dark); }
+    .load-more-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .updates-status {
+      text-align: center;
+      font-size: 12px;
+      color: var(--tt-muted);
+      padding: 20px 0;
+    }
+
+    @media (max-width: 900px) {
+      .workspace { flex-direction: column; height: auto; overflow: visible; }
+      .pane { height: auto; overflow: visible; width: 100% !important; min-width: 0 !important; border: none !important; border-bottom: 1px solid var(--tt-border) !important; }
+      .pane-updates { order: 3; } /* move updates below on mobile */
+      .pane-coaching { order: 1; }
+      .pane-case { order: 2; }
+      .pane-coaching .pane-inner { max-width: 100%; padding: 16px; }
+      .scenario-grid { grid-template-columns: 1fr; }
+      .input-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+    </svg>
+  </div>
+  <div>
+    <div class="header-title">Special Ops Coaching Tool</div>
+    <div class="header-sub">Special Ops · Customer Success</div>
+  </div>
+  <div class="header-links">
+    <a class="header-link-btn" href="https://coda.io/d/Service-Ops-Playbook_dQb5wile7hf/Updates_su-nnF5K#Updates-V2_tuFF1aGG" target="_blank" rel="noopener">
+      📋 Service Playbook
+    </a>
+    <a class="header-link-btn" href="https://thumbtack.cloud.looker.com/dashboards/1097?Is+Instant+Booking+%28Yes+%2F+No%29=&Contact+Created+Date=30+days&Pro+User+Pk=408993737927254024" target="_blank" rel="noopener">
+      📊 Looker
+    </a>
+    <div class="header-badge">Thumbtack Internal</div>
+  </div>
+</div>
+
+<button onclick="openSettings()" title="Settings" style="position:fixed; top:12px; right:16px; z-index:1000; background:rgba(255,255,255,0.9); border:1px solid #ddd; border-radius:8px; padding:6px 10px; font-size:14px; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.1);">⚙️</button>
+
+<div class="workspace">
+
+<!-- MIDDLE PANE: Coaching Tool (flex:1, order:2) -->
+<div class="pane pane-coaching" id="pane-coaching">
+<div class="pane-inner">
+
+  <!-- Step 1: Scenario -->
+  <div class="section-label" style="margin-top:4px;">1 · Select Pain Point Scenario</div>
+  <div class="scenario-grid">
+    <button class="scenario-btn" data-scenario="unresponsive" onclick="selectScenario(this)">
+      <span class="s-icon">📭</span>
+      <span class="s-name">Unresponsive Leads</span>
+      <span class="s-desc">Pro is reaching out but customers aren't replying back</span>
+      <span class="check-mark"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </button>
+    <button class="scenario-btn" data-scenario="nonhire" onclick="selectScenario(this)">
+      <span class="s-icon">🚫</span>
+      <span class="s-name">Non-Hires</span>
+      <span class="s-desc">Pro responds but customers hire a different pro</span>
+      <span class="check-mark"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </button>
+    <button class="scenario-btn" data-scenario="shopping" onclick="selectScenario(this)">
+      <span class="s-icon">🛒</span>
+      <span class="s-name">Shopping Customers</span>
+      <span class="s-desc">Customers comparing prices and not committing</span>
+      <span class="check-mark"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </button>
+    <button class="scenario-btn" data-scenario="cancelled" onclick="selectScenario(this)">
+      <span class="s-icon">❌</span>
+      <span class="s-name">Cancelled Requests</span>
+      <span class="s-desc">Customer won't proceed — cancelled, DIY, or changed mind</span>
+      <span class="check-mark"><svg viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+    </button>
+  </div>
+
+  <!-- Initial Recommendations (shown after scenario selection) -->
+  <div class="initial-recs" id="initialRecs"></div>
+
+  <!-- Step 2: Gather Pro Information -->
+  <div class="section-label">2 · Gather Pro Information</div>
+
+  <!-- Profile URL (category auto-extracted; profile data via screenshot) -->
+  <div class="profile-url-section" id="profileUrlSection">
+    <div class="profile-url-label">🔗 Pro's Thumbtack Profile URL <span style="font-weight:400;color:var(--tt-text-muted);font-size:11px;">(auto-extracts service category)</span></div>
+    <div class="profile-url-row">
+      <input type="text" id="profileUrl" class="pro-field-input"
+             placeholder="https://www.thumbtack.com/..."
+             oninput="onProfileUrlInput()" />
+    </div>
+    <div id="fetchStatus" class="fetch-status"></div>
+    <div id="profilePreview" class="profile-preview"></div>
+    <div style="font-size:11px;color:var(--tt-text-muted);margin-top:6px;line-height:1.5;">
+      🤖 AI will automatically read the profile when you paste a URL. Upload a screenshot in Step 3 if it can't be reached.
+    </div>
+  </div>
+
+  <div id="proDataForm" class="pro-data-form">
+    <!-- Rendered dynamically by renderProDataForm() when a scenario is selected -->
+  </div>
+  <div id="proDataPlaceholder" style="font-size:13px;color:var(--tt-text-muted);padding:12px 0 4px;text-align:center;">
+    ← Select a scenario above to see the data fields
+  </div>
+
+  <!-- Step 3: Screenshots -->
+  <div class="section-label" style="margin-top:18px;">3 · Share Screenshots (Optional)</div>
+  <div class="image-upload-zone" id="uploadZone"
+    ondragover="handleDragOver(event)"
+    ondragleave="handleDragLeave(event)"
+    ondrop="handleDrop(event)">
+    <input type="file" id="imageInput" accept="image/*" multiple onchange="handleFileSelect(event)" />
+    <div class="upload-icon">🖼️</div>
+    <div class="upload-label">Drop screenshots here, or click to upload</div>
+    <div class="upload-sub">Pro's profile · Performance dashboard · Inbox · Ranking page · Any relevant screen</div>
+  </div>
+  <div class="image-previews" id="imagePreviews"></div>
+
+  <!-- Generate -->
+  <button class="generate-btn" id="generateBtn" onclick="generateCoaching()" disabled>
+    <svg viewBox="0 0 16 16" fill="none"><path d="M8 1.5a.5.5 0 0 1 .5.5v5.5H14a.5.5 0 0 1 0 1H8.5V14a.5.5 0 0 1-1 0V8.5H2a.5.5 0 0 1 0-1h5.5V2a.5.5 0 0 1 .5-.5z" fill="currentColor"/><circle cx="13" cy="3" r="2" fill="#FFD700"/></svg>
+    Generate Coaching & Email
+  </button>
+
+  <div class="loading-bar" id="loadingBar"><div class="loading-bar-inner"></div></div>
+  <div class="loading-text" id="loadingText">✨ Analyzing data and generating personalized coaching…</div>
+  <div class="error-box" id="errorBox"></div>
+
+  <!-- Results -->
+  <div class="results-section" id="resultsSection">
+    <hr class="divider" />
+
+    <div class="results-header">
+      <h2>Coaching Output</h2>
+      <span class="scenario-tag" id="scenarioTag"></span>
+      <button class="reset-btn" onclick="resetTool()">↺ New Assessment</button>
+    </div>
+
+    <div id="painSummary" class="pain-summary" style="display:none;">
+      <div class="pain-summary-title">⚠️ Identified Pain Points</div>
+      <div class="pain-summary-text" id="painSummaryText"></div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('coaching', this)">
+        💬 Coaching Tips
+      </button>
+      <button class="tab-btn" onclick="switchTab('email', this)">
+        ✉️ Email Template
+      </button>
+    </div>
+
+    <div id="tab-coaching" class="tab-content active">
+      <div class="output-card">
+        <div class="output-card-header">
+          <div class="output-card-title">
+            <span>💬</span> Direct Coaching (2nd Person Voice)
+          </div>
+          <button class="copy-btn" id="copyCoaching" onclick="copyText('coachingText', 'copyCoaching')">
+            📋 Copy
+          </button>
+        </div>
+        <div class="output-body" id="coachingText"></div>
+      </div>
+    </div>
+
+    <div id="tab-email" class="tab-content">
+      <div class="output-card">
+        <div class="output-card-header">
+          <div class="output-card-title">
+            <span>✉️</span> Email Template
+          </div>
+          <button class="copy-btn" id="copyEmail" onclick="copyText('emailText', 'copyEmail')">
+            📋 Copy
+          </button>
+        </div>
+        <div class="output-body" id="emailText"></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end pane-inner coaching -->
+</div><!-- end pane-coaching -->
+
+<!-- LEFT PANE: Updates (22%, order:1) -->
+<div class="pane pane-updates" id="pane-updates">
+<div class="pane-inner">
+  <div class="pane-header">📋 Playbook Updates</div>
+  <div style="font-size:11px;color:var(--tt-muted);margin-bottom:10px;">Live from the Service Ops Playbook · <span id="updateCount"></span></div>
+
+  <div class="updates-toolbar">
+    <input class="updates-search" id="updatesSearch" type="text" placeholder="🔍 Search by keyword or concept — AI will expand your search…" oninput="onSearchInput()" />
+    <button class="filter-pill" id="thisWeekBtn" onclick="toggleThisWeek()" style="white-space:nowrap;flex-shrink:0;">📅 This Week</button>
+  </div>
+  <div id="aiSearchStatus" style="font-size:11px;color:var(--tt-muted);margin-bottom:8px;min-height:16px;"></div>
+
+  <div class="cat-filter-row">
+    <span class="cat-filter-label">Category</span>
+    <select id="catFilterSelect" class="cat-filter-select" onchange="setCatFilter(this)">
+      <option value="All">All</option>
+      <option value="Product">Product</option>
+      <option value="Process">Process</option>
+      <option value="Policy">Policy</option>
+      <option value="Experiment">Experiment</option>
+      <option value="Tools">Tools</option>
+      <option value="People">People</option>
+    </select>
+  </div>
+
+  <div id="updatesStatus" class="updates-status">Loading updates from Coda…</div>
+  <div class="bulk-actions" id="bulkActions" style="display:none;">
+    <button class="bulk-btn" onclick="expandAll()">⬇ Expand All</button>
+    <button class="bulk-btn" onclick="collapseAll()">⬆ Collapse All</button>
+  </div>
+  <div class="updates-list" id="updatesList"></div>
+  <button class="load-more-btn" id="loadMoreBtn" onclick="loadMoreUpdates()" style="display:none;">Load more updates</button>
+</div><!-- end pane-inner updates -->
+</div><!-- end pane-updates -->
+
+<!-- RIGHT PANE: Case Submission Form (20%, order:3) -->
+<div class="pane pane-case" id="pane-case">
+<div class="pane-inner">
+  <div class="pane-header">📝 Case Submission</div>
+
+  <div class="case-field-group">
+    <label class="case-label">Agent</label>
+    <!-- Shown once name is saved -->
+    <div class="cf-agent-id" id="cf_agent_display" style="display:none;">
+      👤 <span id="cf_agent_name_text"></span>
+      <button class="cf-agent-edit-btn" onclick="editAgentName()" title="Change name">✏️</button>
+    </div>
+    <!-- Shown on first use or when editing -->
+    <div id="cf_agent_input_wrap">
+      <input type="text" id="cf_agent_name_input" class="case-input"
+             placeholder="Enter your name…"
+             onkeydown="if(event.key==='Enter') saveAgentName()" />
+      <button class="cf-agent-save-btn" onclick="saveAgentName()">Save</button>
+    </div>
+  </div>
+  <div class="case-field-group">
+    <label class="case-label" for="cf_case_id">Case ID</label>
+    <input type="text" id="cf_case_id" class="case-input" placeholder="e.g. 00123456" />
+  </div>
+  <div class="case-field-group">
+    <label class="case-label" for="cf_primary_theme">Primary Theme</label>
+    <input type="text" id="cf_primary_theme" class="case-input" placeholder="e.g. Profile Optimization" />
+  </div>
+  <div class="case-field-group">
+    <label class="case-label" for="cf_secondary_theme">Secondary Theme</label>
+    <input type="text" id="cf_secondary_theme" class="case-input" placeholder="e.g. Response Rate" />
+  </div>
+
+  <div class="case-check-row">
+    <label class="case-check-label">
+      <input type="checkbox" id="cf_admin_grant" class="case-check" />
+      Admin Grant
+    </label>
+  </div>
+  <div class="case-check-row">
+    <label class="case-check-label">
+      <input type="checkbox" id="cf_refund" class="case-check" onchange="toggleRefundReason(this)" />
+      Refund
+    </label>
+  </div>
+  <div class="case-check-row">
+    <label class="case-check-label">
+      <input type="checkbox" id="cf_onboarded" class="case-check" />
+      Onboarded?
+    </label>
+  </div>
+  <div class="case-field-group" id="cf_refund_reason_group" style="display:none;">
+    <label class="case-label" for="cf_refund_reason">Reason for Refund</label>
+    <select id="cf_refund_reason" class="case-input">
+      <option value="">— Select a reason —</option>
+      <option value="Good Refund History">Good Refund History</option>
+      <option value="Has Valid Proof">Has Valid Proof</option>
+      <option value="Legal">Legal</option>
+      <option value="Submit Negative Feedback">Submit Negative Feedback</option>
+      <option value="Threaten to Cancel">Threaten to Cancel</option>
+      <option value="Others">Others</option>
+    </select>
+  </div>
+
+  <button class="case-submit-btn" onclick="submitCase()">Submit Case</button>
+  <div class="case-submit-status" id="caseSubmitStatus"></div>
+
+  <!-- ── Refund Calculator ── -->
+  <div class="refund-calc">
+    <div class="refund-calc-header">
+      <span>🧮 Refund Calculator</span>
+      <button class="refund-clear-btn" onclick="clearRefundCalc()" title="Clear all fields">↺ Clear</button>
+    </div>
+
+    <div class="case-field-group">
+      <label class="case-label" for="rc_requested">Requested Refund Amount</label>
+      <div class="refund-input-wrap">
+        <span class="dollar-sign">$</span>
+        <input type="number" id="rc_requested" class="case-input" placeholder="0.00" min="0" step="0.01" oninput="calcRefundPct()" />
+      </div>
+    </div>
+
+    <div class="case-field-group">
+      <label class="case-label" for="rc_total_refunds">Total Refunds Revenue</label>
+      <div class="refund-input-wrap">
+        <span class="dollar-sign">$</span>
+        <input type="number" id="rc_total_refunds" class="case-input" placeholder="0.00" min="0" step="0.01" oninput="calcRefundPct()" />
+      </div>
+    </div>
+
+    <div class="case-field-group" style="margin-bottom:0;">
+      <label class="case-label" for="rc_total_charges">Total Charges Revenue</label>
+      <div class="refund-input-wrap">
+        <span class="dollar-sign">$</span>
+        <input type="number" id="rc_total_charges" class="case-input" placeholder="0.00" min="0" step="0.01" oninput="calcRefundPct()" />
+      </div>
+    </div>
+
+    <div class="refund-result-box">
+      <span class="refund-result-label">% of Charged<br>Revenue</span>
+      <span class="refund-result-value" id="rc_result">—</span>
+    </div>
+    <div class="refund-approval" id="rc_approval"></div>
+    <button class="refund-slack-btn" id="rc_slack_btn" onclick="openApprovalModal()">
+      💬 &nbsp;Request Manager Approval via Slack
+    </button>
+  </div>
+
+</div><!-- end pane-inner case -->
+</div><!-- end pane-case -->
+
+</div><!-- end workspace -->
+
+<!-- Manager Approval Request Modal -->
+<div class="approval-modal-overlay" id="approvalModal" onclick="if(event.target===this)closeApprovalModal()">
+  <div class="approval-modal">
+    <div class="approval-modal-header">
+      <div class="approval-modal-title">🚨 Request Manager Approval</div>
+      <button class="approval-modal-close" onclick="closeApprovalModal()">✕</button>
+    </div>
+    <div class="approval-modal-body">
+      <div class="approval-modal-summary" id="am_summary"></div>
+
+      <div class="case-field-group">
+        <label class="case-label" for="am_case_id">Case ID</label>
+        <input type="text" id="am_case_id" class="case-input" placeholder="e.g. 00123456" />
+      </div>
+      <div class="case-field-group">
+        <label class="case-label" for="am_pro_pk">Pro User PK</label>
+        <input type="text" id="am_pro_pk" class="case-input" placeholder="e.g. 987654321" />
+      </div>
+      <div class="case-field-group">
+        <label class="case-label" for="am_refund_reason">Refund Reason</label>
+        <textarea id="am_refund_reason" class="case-textarea" rows="2" placeholder="Why is this refund being requested?"></textarea>
+      </div>
+      <div class="case-field-group">
+        <label class="case-label" for="am_lead_links">Disputed Lead Links</label>
+        <textarea id="am_lead_links" class="case-textarea" rows="2" placeholder="Paste lead URLs, one per line…"></textarea>
+      </div>
+      <div class="case-field-group" style="margin-bottom:0;">
+        <label class="case-label" for="am_remarks">Remarks</label>
+        <textarea id="am_remarks" class="case-textarea" rows="2" placeholder="Any additional context…"></textarea>
+      </div>
+    </div>
+    <div class="approval-modal-footer" style="flex-direction:column;">
+      <div style="display:flex;gap:8px;">
+        <button class="approval-cancel-btn" onclick="closeApprovalModal()">Cancel</button>
+        <button class="approval-send-btn" id="am_send_btn" onclick="sendApprovalRequest()">
+          💬 Send to #special-ops-team-refund-approval
+        </button>
+      </div>
+      <div class="approval-send-status" id="am_send_status"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Update Detail Popup Modal -->
+<div class="update-modal-overlay" id="updateModal" onclick="if(event.target===this)closeUpdateModal()">
+  <div class="update-modal">
+    <div class="update-modal-header">
+      <div class="update-modal-meta">
+        <div class="update-modal-date" id="updateModalDate"></div>
+        <div class="update-modal-subject" id="updateModalSubject"></div>
+      </div>
+      <button class="update-modal-close" onclick="closeUpdateModal()" title="Close">✕</button>
+    </div>
+    <div class="update-modal-cats" id="updateModalCats"></div>
+    <div class="update-modal-body" id="updateModalBody"></div>
+  </div>
+</div>
+
+<script>
+// ── CONFIGURATION (stored in browser localStorage — no secrets in code) ──
+const CONFIG = {
+  get GEMINI_API_KEY()            { return localStorage.getItem('ttCoach_geminiKey') || ''; },
+  get CODA_API_TOKEN()            { return localStorage.getItem('ttCoach_codaToken') || ''; },
+  CODA_DOC_ID:                    'Qb5wile7hf',
+  CODA_UPDATES_TABLE_ID:          'FF1aGG',
+  CODA_SUBMISSIONS_TABLE_ID:      'grid-UYaKivQQlU',
+  get SLACK_WEBHOOK_URL()         { return localStorage.getItem('ttCoach_slackWebhook') || ''; },
+};
+// ─────────────────────────────────────────────────────────────────────────
+
+// ── SETTINGS SCREEN ────────────────────────────────────────────────────────
+function initSettings() {
+  const overlay = document.getElementById('settingsOverlay');
+  // Show overlay if required keys are missing
+  if (!localStorage.getItem('ttCoach_geminiKey') || !localStorage.getItem('ttCoach_codaToken')) {
+    overlay.style.display = 'flex';
+    // Pre-fill any already-saved values
+    const g = localStorage.getItem('ttCoach_geminiKey');
+    const c = localStorage.getItem('ttCoach_codaToken');
+    const s = localStorage.getItem('ttCoach_slackWebhook');
+    if (g) document.getElementById('s_gemini').value = g;
+    if (c) document.getElementById('s_coda').value = c;
+    if (s) document.getElementById('s_slack').value = s;
+  } else {
+    overlay.style.display = 'none';
+  }
+}
+
+function openSettings() {
+  const overlay = document.getElementById('settingsOverlay');
+  const g = localStorage.getItem('ttCoach_geminiKey');
+  const c = localStorage.getItem('ttCoach_codaToken');
+  const s = localStorage.getItem('ttCoach_slackWebhook');
+  if (g) document.getElementById('s_gemini').value = g;
+  if (c) document.getElementById('s_coda').value = c;
+  if (s) document.getElementById('s_slack').value = s;
+  overlay.style.display = 'flex';
+}
+
+function saveSettings() {
+  const gemini = document.getElementById('s_gemini').value.trim();
+  const coda   = document.getElementById('s_coda').value.trim();
+  const slack  = document.getElementById('s_slack').value.trim();
+  const errEl  = document.getElementById('s_error');
+
+  if (!gemini) { errEl.textContent = '⚠️ Gemini API Key is required.'; errEl.style.display = 'block'; return; }
+  if (!coda)   { errEl.textContent = '⚠️ Coda API Token is required.'; errEl.style.display = 'block'; return; }
+
+  localStorage.setItem('ttCoach_geminiKey', gemini);
+  localStorage.setItem('ttCoach_codaToken', coda);
+  if (slack) localStorage.setItem('ttCoach_slackWebhook', slack);
+  else localStorage.removeItem('ttCoach_slackWebhook');
+
+  errEl.style.display = 'none';
+  document.getElementById('settingsOverlay').style.display = 'none';
+
+  // Reload updates now that credentials are available
+  autoLoadAll();
+}
+
+function toggleVis(id) {
+  const el = document.getElementById(id);
+  el.type = el.type === 'password' ? 'text' : 'password';
+}
+// ──────────────────────────────────────────────────────────────────────────
+
+// ── GEMINI API ─────────────────────────────────────────────────────────────
+async function callGemini(prompt, mediaItems = [], useUrlContext = false) {
+  const parts = [{ text: prompt }];
+  mediaItems.forEach(item => {
+    if (item.type === 'image') {
+      parts.push({ inline_data: { mime_type: item.source.media_type, data: item.source.data } });
+    } else if (item.type === 'document') {
+      parts.push({ inline_data: { mime_type: 'application/pdf', data: item.source.data } });
+    }
+  });
+  const body = {
+    contents: [{ parts }],
+    generationConfig: { temperature: 0.7, maxOutputTokens: 8192 }
+  };
+  if (useUrlContext) {
+    body.tools = [{ url_context: {} }];
+  }
+  const resp = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${CONFIG.GEMINI_API_KEY}`,
+    { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }
+  );
+  if (!resp.ok) throw new Error(`Gemini API error ${resp.status}: ${await resp.text()}`);
+  const data = await resp.json();
+  return data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('') || '';
+}
+
+// ── CODA REST API ──────────────────────────────────────────────────────────
+async function codaGetRows(tableId, { limit = 50, pageToken = null, columnsToInclude = null } = {}) {
+  const params = new URLSearchParams({ limit });
+  if (pageToken) params.set('pageToken', pageToken);
+  if (columnsToInclude && columnsToInclude.length) params.set('visibleOnly', 'false');
+  const resp = await fetch(
+    `https://coda.io/apis/v1/docs/${CONFIG.CODA_DOC_ID}/tables/${tableId}/rows?${params}`,
+    { headers: { 'Authorization': `Bearer ${CONFIG.CODA_API_TOKEN}` } }
+  );
+  if (!resp.ok) throw new Error(`Coda read error ${resp.status}`);
+  return resp.json(); // { items: [...], nextPageToken?, ... }
+}
+
+async function codaAddRow(tableId, columnValues) {
+  // columnValues: { 'c-xxx': value, ... }
+  const cells = Object.entries(columnValues).map(([column, value]) => ({ column, value }));
+  const resp = await fetch(
+    `https://coda.io/apis/v1/docs/${CONFIG.CODA_DOC_ID}/tables/${tableId}/rows`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${CONFIG.CODA_API_TOKEN}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ rows: [{ cells }] })
+    }
+  );
+  if (!resp.ok) throw new Error(`Coda write error ${resp.status}`);
+  return resp.json();
+}
+
+  let selectedScenario = null;
+  let uploadedFiles = []; // array of { id, type: 'image'|'pdf', dataUrl, base64, mediaType, name }
+
+  const scenarioLabels = {
+    unresponsive: 'Unresponsive Leads',
+    nonhire: 'Non-Hires',
+    shopping: 'Shopping Customers',
+    cancelled: 'Cancelled Customers'
+  };
+
+  const scenarioTagClasses = {
+    unresponsive: 'tag-unresponsive',
+    nonhire: 'tag-nonhire',
+    shopping: 'tag-shopping',
+    cancelled: 'tag-cancelled'
+  };
+
+  const scenarioContext = {
+    unresponsive: `The pro is sending messages to leads but customers are not responding back. This typically happens because the pro responded too late after the lead came in (and the customer already moved on to the first pro who replied), because the first message lacked warmth or a clear next step, or because the customer was browsing but not fully ready to hire. Every unresponsive lead is a paid lead that didn't convert — and repeated low response rates affect the pro's ranking on Thumbtack's algorithm.`,
+    nonhire: `The pro receives leads and may even respond, but consistently fails to convert them into hired jobs. Issues may include pricing communicated without context, a profile that doesn't build enough trust (low reviews, missing photos, incomplete FAQs), a first message that doesn't differentiate them from competitors, or a weak call-to-action.`,
+    shopping: `A customer sent the pro a lead (which the pro was charged for), but the customer ended up choosing a different pro or not moving forward at all. The leads are coming in — the issue is conversion. The pro may have responded, quoted a price, and the customer still went elsewhere. The coaching focus is: how can the pro make their profile more compelling and their response more persuasive so that the next time a customer is comparing pros, they choose this one.`,
+    cancelled: `The customer has indicated they will no longer proceed — this may be a formally scheduled job that was cancelled, or it could be the customer saying they did it themselves, a friend helped, or they simply changed their mind. Individual cancellations are normal, but they waste the pro's time and frequent cancellations signal instability on their Thumbtack profile. Key prevention strategies include confirming scope/price/timeline upfront and sending a day-before confirmation message.`
+  };
+
+  const scenarioRecs = {
+    unresponsive: {
+      reasons: [
+        { icon: '⏰', title: 'Late response', desc: 'Lead came in at 9am; pro replied at 3pm — customer already hired someone else.' },
+        { icon: '📝', title: 'Weak first message', desc: 'No clear CTA, no value statement, or too many questions at once.' },
+        { icon: '🔍', title: 'Customer was browsing', desc: 'Customer was exploring options or short on time — not fully ready to hire.' },
+      ],
+      review: [
+        { icon: '📊', tool: 'Performance Dashboard', what: 'Check response time vs. top pros in the market' },
+        { icon: '💬', tool: "Pro's Inbox", what: 'Read the first messages sent to recent unresponsive leads' },
+        { icon: '👤', tool: 'Profile (Customer View)', what: "Does the profile build enough trust to deserve a reply?" },
+        { icon: '⭐', tool: 'How You Rank', what: 'Compare response time and ranking against competitors' },
+        { icon: '📸', tool: 'Photos & Reviews', what: 'Strong visuals and reviews increase reply likelihood' },
+      ],
+      collect: [
+        "Response time stat from Performance Dashboard (e.g., 'responds in 26 min')",
+        'Copy of the first message(s) sent to unresponsive leads',
+        'Number of unresponsive leads in the last 30 days',
+        "Pro's review rating and count",
+      ],
+    },
+    nonhire: {
+      reasons: [
+        { icon: '👤', title: 'Weak profile trust signals', desc: 'Low reviews, missing photos, unanswered FAQs — customer picked a more polished competitor.' },
+        { icon: '💬', title: 'First message lacks differentiation', desc: 'No clear value prop or CTA — nothing to make the pro stand out from others.' },
+        { icon: '💰', title: 'Pricing not contextualized', desc: 'Quote given without scope or value statement — customer just picked the lowest number.' },
+      ],
+      review: [
+        { icon: '👤', tool: 'Profile (Customer View)', what: 'Reviews, intro, photos, credentials, FAQ completeness' },
+        { icon: '⭐', tool: 'How You Rank', what: 'How does this pro compare to the top hired pros in the area?' },
+        { icon: '💬', tool: "Pro's Inbox", what: "Review messages sent before the customer's hire decision" },
+        { icon: '📊', tool: 'Performance Dashboard', what: 'Profile views vs. hires — conversion rate and ranking stats' },
+        { icon: '⚙️', tool: 'Services & Preferences', what: 'Are they showing up for the right job types and locations?' },
+      ],
+      collect: [
+        'Review count and average rating',
+        'Hire rate from Performance Dashboard',
+        "Example of the pro's first message to a non-hire",
+        'Profile completeness notes (missing photos, unanswered FAQs, etc.)',
+      ],
+    },
+    shopping: {
+      reasons: [
+        { icon: '💸', title: 'Price quoted too quickly', desc: "Pro gave a number before getting details — easy to compare and dismiss without context." },
+        { icon: '🔄', title: 'No value differentiation', desc: "Pro's message didn't explain why they're worth it vs. cheaper alternatives." },
+        { icon: '📵', title: 'No follow-up after silence', desc: 'Customer went quiet after receiving price — pro never followed up or offered options.' },
+      ],
+      review: [
+        { icon: '💬', tool: "Pro's Inbox", what: "How is the pro responding to 'what's your price?' messages?" },
+        { icon: '⭐', tool: 'How You Rank', what: 'What value signals are top competitors showing (response time, reviews, badges)?' },
+        { icon: '📊', tool: 'Performance Dashboard', what: 'Lead price competitiveness and search appearance rate' },
+        { icon: '👤', tool: 'Profile (Customer View)', what: 'Are value differentiators (reviews, credentials, photos) clearly visible?' },
+        { icon: '⚙️', tool: 'Services & Preferences', what: 'Are lead prices competitive enough to show up in more searches?' },
+      ],
+      collect: [
+        'Example conversations where customer asked for price then disengaged',
+        'Current lead price vs. top competitors (from How You Rank)',
+        'Profile differentiators: review rating, credentials, photo count',
+        'Which services or job types get abandoned most at the price stage',
+      ],
+    },
+    cancelled: {
+      reasons: [
+        { icon: '📋', title: 'Expectation mismatch', desc: "Scope, price, or timeline wasn't confirmed before the job — customer had different expectations." },
+        { icon: '🔧', title: 'Customer found another solution', desc: 'Customer did it themselves, a friend helped, or found a faster pro in the meantime.' },
+        { icon: '📅', title: 'No pre-job confirmation', desc: 'No day-before reminder sent — customer forgot, changed mind, or lost confidence.' },
+      ],
+      review: [
+        { icon: '💬', tool: "Pro's Inbox", what: 'Was scope/price confirmed before the job? Was a day-before reminder sent?' },
+        { icon: '🗓️', tool: 'Calendar / Availability', what: 'Are availability settings accurate? Is the pro overbooked or blocking wrong dates?' },
+        { icon: '⚙️', tool: 'Services & Preferences', what: 'Is the pro accepting leads outside their actual capacity or travel range?' },
+        { icon: '📊', tool: 'Performance Dashboard', what: 'Hire count vs. completed jobs — how often do bookings end in cancellation?' },
+      ],
+      collect: [
+        'Example conversation leading up to the cancellation — was scope confirmed?',
+        'How many cancellations in the last 30 days?',
+        "Pro's current availability/calendar status",
+        'Whether cancellations are coming from the pro or the customer',
+      ],
+    },
+  };
+
+  // ── STRUCTURED PRO DATA FORM ──────────────────────────
+  const commonReviewFields = [
+    { id: 'sf_review_rating', label: 'Review rating', type: 'number', unit: '/5.0', placeholder: '4.8', step: '0.1', hint: "Pro's profile or Performance Dashboard" },
+    { id: 'sf_review_count', label: 'Number of reviews', type: 'number', unit: 'reviews', placeholder: '25', hint: "Pro's profile or Performance Dashboard" },
+  ];
+
+  // Real Thumbtack default FAQ questions
+  const ALL_FAQ_QUESTIONS = [
+    'What should the customer know about your pricing (e.g., discounts, fees)?',
+    'What is your typical process for working with a new customer?',
+    'What education and/or training do you have that relates to your work?',
+    'How did you get started doing this type of work?',
+    'What types of customers have you worked with?',
+    'Describe a recent project you are fond of. How long did it take?',
+    'What advice would you give a customer looking to hire a provider in your area of work?',
+    'What questions should customers think through before talking to professionals about their project?',
+  ];
+
+  // FAQ questions ranked by relevance per scenario (first = auto-selected)
+  const scenarioFaqQuestions = {
+    unresponsive: [
+      { q: 'What is your typical process for working with a new customer?',
+        why: 'Reveals if the pro has a clear, confidence-building intake process — a weak answer here may explain low reply rates' },
+      { q: 'What should the customer know about your pricing (e.g., discounts, fees)?',
+        why: 'Price transparency in the FAQ can reassure hesitant customers to respond' },
+      { q: 'What advice would you give a customer looking to hire a provider in your area of work?',
+        why: 'Shows how the pro positions their value — a strong answer builds trust before the customer even replies' },
+    ],
+    nonhire: [
+      { q: 'What should the customer know about your pricing (e.g., discounts, fees)?',
+        why: 'Pricing clarity is the #1 conversion factor — vague or missing answers lose jobs' },
+      { q: 'What is your typical process for working with a new customer?',
+        why: 'Customers hire pros who feel organized and easy to work with — a clear process reduces perceived risk' },
+      { q: 'What education and/or training do you have that relates to your work?',
+        why: 'Credibility that helps justify the quote and differentiate from cheaper competitors' },
+      { q: 'What types of customers have you worked with?',
+        why: 'Social proof — similar past customers signal reliability and relevant experience' },
+    ],
+    shopping: [
+      { q: 'What should the customer know about your pricing (e.g., discounts, fees)?',
+        why: 'Shopping customers focus on price — a strong FAQ answer can shift the conversation to value' },
+      { q: 'What advice would you give a customer looking to hire a provider in your area of work?',
+        why: 'Positions the pro as an expert, not just a vendor — reframes the decision beyond price' },
+      { q: 'What education and/or training do you have that relates to your work?',
+        why: 'Justifies premium pricing over cheaper, less-qualified competitors' },
+      { q: 'Describe a recent project you are fond of. How long did it take?',
+        why: 'Concrete past work builds confidence for customers comparing multiple pros' },
+    ],
+    cancelled: [
+      { q: 'What is your typical process for working with a new customer?',
+        why: 'A clear process (incl. confirmation steps) can prevent future cancellations by setting expectations early' },
+      { q: 'What questions should customers think through before talking to professionals about their project?',
+        why: 'Helps filter out unprepared leads and reduces surprise cancellations' },
+      { q: 'What should the customer know about your pricing (e.g., discounts, fees)?',
+        why: 'Price surprises are a top cancellation trigger — FAQ clarity helps prevent them' },
+    ],
+  };
+
+  // Returns profile detail fields — FAQ list is scenario-specific (recommended first)
+  function getProfileDetailFields(scenario) {
+    const recommended = (scenarioFaqQuestions[scenario] || []).map(item => item.q);
+    const rest = ALL_FAQ_QUESTIONS.filter(q => !recommended.includes(q));
+    const faqOptions = [...recommended, ...rest]; // recommended questions appear first
+    const topWhy = scenarioFaqQuestions[scenario]?.[0]?.why || '';
+    return [
+      { id: 'sf_intro_text', label: "Pro's introduction", type: 'textarea',
+        placeholder: "Paste the pro's bio / intro from their profile...",
+        hint: "Pro's profile → About section", span: true },
+      { id: 'sf_faq_question', label: 'Relevant FAQ question to review', type: 'select',
+        hint: 'Top options pre-selected for this scenario — change if needed',
+        options: faqOptions, defaultValue: recommended[0] || '',
+        whyNote: topWhy },
+      { id: 'sf_faq_answer', label: "Pro's answer to that FAQ question", type: 'textarea',
+        placeholder: "Paste the pro's exact answer here...",
+        hint: "Pro's profile → FAQ section" },
+    ];
+  }
+
+  // Fields ordered by where the data lives (Performance Dashboard → Ranking page → Inbox → Ask pro)
+  const scenarioFields = {
+    unresponsive: [
+      { id: 'sf_leads_30d',     label: 'Leads received (30 days)', type: 'number', unit: 'leads', placeholder: '77',  hint: 'Performance Dashboard → Leads' },
+      { id: 'sf_response_time', label: 'Response time',            type: 'number', unit: 'min',   placeholder: '26',  hint: 'Performance Dashboard → Response time' },
+      { id: 'sf_ranking', label: 'Ranking position', type: 'select', hint: 'See How You Rank page',
+        options: ['Part of Top 5', 'Part of Top 10', 'Part of Top 25', 'Part of Top 50', 'Not in Top 50'] },
+      { id: 'sf_unresponsive_extent', label: 'How many leads went unresponsive?', type: 'select', hint: 'Inbox or ask the pro',
+        options: ['Most / all recent leads', 'About half', 'Just a few', 'Unknown / pro not sure'] },
+      { id: 'sf_message_1', label: "Pro's first message (example)", type: 'textarea', rows: 2,
+        placeholder: 'e.g. "Hi! I\'m available and can help. Let me know!"',
+        hint: "Inbox → open a recent unresponsive lead → copy the pro's first message", span: true },
+      { id: 'sf_message_2', label: 'Second message example (optional)', type: 'textarea', rows: 2,
+        placeholder: 'Another example for comparison', hint: 'Another recent lead', span: true },
+    ],
+    nonhire: [
+      { id: 'sf_leads_30d',     label: 'Leads received (30 days)', type: 'number', unit: 'leads',  placeholder: '77', hint: 'Performance Dashboard → Leads' },
+      { id: 'sf_hires_30d',     label: 'Hires (30 days)',          type: 'number', unit: 'hires',  placeholder: '4',  hint: 'Performance Dashboard → Hires' },
+      { id: 'sf_response_time', label: 'Response time',            type: 'number', unit: 'min',    placeholder: '26', hint: 'Performance Dashboard → Response time' },
+      { id: 'sf_ranking', label: 'Ranking position', type: 'select', hint: 'See How You Rank page',
+        options: ['Part of Top 5', 'Part of Top 10', 'Part of Top 25', 'Part of Top 50', 'Not in Top 50'] },
+      { id: 'sf_pitch_notes', label: 'Quote / pitch approach', type: 'textarea', rows: 2,
+        placeholder: 'e.g. Typical price range, how they follow up, any known issues with their pitch…',
+        hint: 'Ask the pro or observe from inbox messages', span: true },
+    ],
+    shopping: [
+      { id: 'sf_leads_30d',     label: 'Leads received (30 days)', type: 'number', unit: 'leads', placeholder: '77', hint: 'Performance Dashboard → Leads' },
+      { id: 'sf_response_time', label: 'Response time',            type: 'number', unit: 'min',   placeholder: '26', hint: 'Performance Dashboard → Response time' },
+      { id: 'sf_ranking', label: 'Ranking position', type: 'select', hint: 'See How You Rank page',
+        options: ['Part of Top 5', 'Part of Top 10', 'Part of Top 25', 'Part of Top 50', 'Not in Top 50'] },
+      { id: 'sf_price_position', label: "Price vs. market", type: 'select',
+        hint: "See How You Rank → compare pro's price to others",
+        options: ['Cheapest in market', 'Below average', 'Around average', 'Above average', 'Most expensive in market', 'No pricing listed'] },
+      { id: 'sf_price_listed', label: "Listed price / range", type: 'text', placeholder: 'e.g. $120–$200 or Free Estimate',
+        hint: "See How You Rank or pro's profile",
+        suggestions: ['Free Estimate', 'Under $100', '$50–$100', '$100–$200', '$150–$300', '$200–$500', '$300–$600', '$500–$1,000', '$1,000–$2,000', 'Over $2,000'] },
+    ],
+    cancelled: [
+      { id: 'sf_cancellations_30d', label: 'Cancellations (30 days)', type: 'number', unit: 'cancellations', placeholder: '3',
+        hint: 'Inbox — count cancelled leads + booked jobs' },
+      { id: 'sf_job_was_booked', label: 'Was the job booked before cancellation?', type: 'select',
+        hint: 'Inbox → check thread for booking confirmation',
+        options: ['Yes — job was confirmed / booked', 'Unclear — customer seemed interested', 'No — cancelled at the lead stage'] },
+      { id: 'sf_reason_text', label: 'Cancellation reason (quote customer if possible)', type: 'textarea', rows: 2,
+        placeholder: 'e.g. "Found someone cheaper", "Going to do it myself", or No reason given',
+        hint: 'Inbox → read the cancellation message', span: true },
+      { id: 'sf_pro_replied', label: 'Did the pro respond after the cancellation?', type: 'select',
+        hint: "Inbox → check the pro's last message",
+        options: ['Yes', 'No', 'Not yet'] },
+      { id: 'sf_pro_reply_text', label: "Pro's reply (optional)", type: 'textarea', rows: 2,
+        placeholder: "What did the pro say in response?", hint: 'Inbox → copy from thread', span: true },
+    ],
+  };
+
+  const profileItems = [
+    { id: 'pc_photo',     label: 'Profile photo' },
+    { id: 'pc_portfolio', label: 'Portfolio photos (3+)' },
+    { id: 'pc_bio',       label: 'Bio / intro written' },
+    { id: 'pc_faq',       label: 'FAQ answered' },
+    { id: 'pc_bg_check',  label: 'Background check' },
+  ];
+
+  function buildFieldHtml(fields) {
+    return fields.map(f => {
+      let inputHtml;
+      const rows = f.rows || 3;
+      if (f.type === 'textarea') {
+        inputHtml = `<textarea id="${f.id}" class="pro-field-textarea" rows="${rows}" placeholder="${f.placeholder || ''}"></textarea>`;
+      } else if (f.type === 'select') {
+        // Support defaultValue (auto-selected option)
+        const opts = f.options.map(o =>
+          `<option value="${o}"${o === f.defaultValue ? ' selected' : ''}>${o}</option>`
+        ).join('');
+        const noDefaultBlank = f.defaultValue ? '' : '<option value="">— select —</option>';
+        inputHtml = `<select id="${f.id}" class="pro-field-select">${noDefaultBlank}${opts}</select>`;
+      } else {
+        const hasUnit = !!f.unit;
+        const listId = f.suggestions ? `${f.id}_list` : '';
+        const listAttr = f.suggestions ? ` list="${listId}"` : '';
+        const datalistHtml = f.suggestions
+          ? `<datalist id="${listId}">${f.suggestions.map(s => `<option value="${s}">`).join('')}</datalist>`
+          : '';
+        inputHtml = `<div class="pro-field-with-unit">
+          <input type="${f.type}" id="${f.id}" class="pro-field-input${hasUnit ? ' has-unit' : ''}" placeholder="${f.placeholder || ''}" ${f.step ? `step="${f.step}"` : ''}${listAttr} />
+          ${hasUnit ? `<span class="field-unit">${f.unit}</span>` : ''}
+        </div>${datalistHtml}`;
+      }
+      // whyNote shows the reasoning for auto-selected FAQ question
+      const whyHtml = f.whyNote
+        ? `<span class="field-why" id="${f.id}_why">💡 ${f.whyNote}</span>` : '';
+      return `<div class="pro-field-group${f.span ? ' span-2' : ''}">
+        <label class="pro-field-label" for="${f.id}">${f.label}${f.hint ? `<span class="field-hint">${f.hint}</span>` : ''}</label>
+        ${inputHtml}${whyHtml}
+      </div>`;
+    }).join('');
+  }
+
+  function renderProDataForm(scenario) {
+    const formEl = document.getElementById('proDataForm');
+    const placeholder = document.getElementById('proDataPlaceholder');
+    const fields = scenarioFields[scenario];
+    if (!formEl || !fields) return;
+
+    const metricsHtml = buildFieldHtml(fields);
+
+    formEl.innerHTML = `
+      <div class="pro-fields-section">
+        <div class="pro-fields-header">📊 Performance Data <span style="font-size:10px;font-weight:400;color:#6b7280;margin-left:6px;">From the pro's Thumbtack dashboard — not visible publicly</span></div>
+        <div class="pro-fields-body">
+          <div class="pro-fields-grid">${metricsHtml}</div>
+        </div>
+      </div>
+      <div class="pro-fields-section">
+        <div class="pro-fields-header">📝 Notes</div>
+        <div class="pro-fields-body">
+          <textarea id="sf_other_notes" class="pro-field-textarea" rows="2" placeholder="Anything else relevant — tone of the pro, concerns raised, observations from the call…"></textarea>
+        </div>
+      </div>`;
+
+    formEl.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('input', updateGenerateBtn);
+      el.addEventListener('change', updateGenerateBtn);
+    });
+
+    formEl.classList.add('visible');
+    if (placeholder) placeholder.style.display = 'none';
+    updateGenerateBtn();
+  }
+
+  function setAllProfileItems(checked) {
+    profileItems.forEach(p => {
+      const cb = document.getElementById(p.id);
+      if (cb) cb.checked = checked;
+    });
+    updateGenerateBtn();
+  }
+
+  function getProDataForPrompt() {
+    const lines = [];
+    const scenario = selectedScenario;
+    if (!scenario || !scenarioFields[scenario]) return '';
+
+    // Scenario-specific performance fields
+    scenarioFields[scenario].forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      const val = f.type === 'select' ? el.options[el.selectedIndex]?.value : el.value?.trim();
+      if (!val || val === '— select —') return;
+      lines.push(`${f.label}: ${val}${f.unit ? ' ' + f.unit : ''}`);
+    });
+
+    // Profile data auto-extracted from URL
+    const pd = fetchedProfileData;
+    if (pd && Object.keys(pd).length > 0) {
+      lines.push('');
+      lines.push('PROFILE DATA (auto-extracted from Thumbtack profile):');
+      if (pd.name)           lines.push(`Business name: ${pd.name}`);
+      if (pd.category)       lines.push(`Service category: ${pd.category}`);
+      if (pd.rating)         lines.push(`Rating: ${parseFloat(pd.rating).toFixed(1)}/5.0`);
+      if (pd.reviewCount)    lines.push(`Number of reviews: ${pd.reviewCount}`);
+      if (pd.topPro)         lines.push(`Top Pro badge: Yes`);
+      if (pd.portfolioCount !== undefined) lines.push(`Portfolio photos: ${pd.portfolioCount}`);
+      if (pd.hasPhoto !== undefined) lines.push(`Profile photo: ${pd.hasPhoto ? 'Yes' : 'No'}`);
+      if (pd.hasBackgroundCheck !== undefined) lines.push(`Background check: ${pd.hasBackgroundCheck ? 'Yes' : 'No'}`);
+      if (pd.yearsInBusiness) lines.push(`Years in business: ${pd.yearsInBusiness}`);
+      if (pd.bio) lines.push(`Bio: "${pd.bio.substring(0, 600)}"`);
+      if (pd.faqAnswers?.length) {
+        pd.faqAnswers.forEach(faq => {
+          lines.push(`FAQ — Q: "${faq.q}" | A: "${faq.a.substring(0, 400)}"`);
+        });
+      }
+    }
+
+    const notes = document.getElementById('sf_other_notes')?.value?.trim();
+    if (notes) lines.push(`\nNotes: ${notes}`);
+
+    return lines.join('\n');
+  }
+
+  function clearProDataForm() {
+    fetchedProfileData = {};
+    const previewEl = document.getElementById('profilePreview');
+    if (previewEl) { previewEl.innerHTML = ''; previewEl.style.display = 'none'; }
+    const statusEl = document.getElementById('fetchStatus');
+    if (statusEl) statusEl.textContent = '';
+    // Note: intentionally do NOT clear profileUrl input — agent may reuse same pro
+    const formEl = document.getElementById('proDataForm');
+    if (formEl) {
+      formEl.innerHTML = '';
+      formEl.classList.remove('visible');
+    }
+    const placeholder = document.getElementById('proDataPlaceholder');
+    if (placeholder) placeholder.style.display = '';
+  }
+
+  // ── PROFILE URL FETCH ─────────────────────────────────
+  let fetchedProfileData = {};
+
+  function extractCategoryFromUrl(url) {
+    const match = url.match(/thumbtack\.com\/[a-z]{2}\/[^/]+\/([^/]+)\//);
+    if (match) return match[1].replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    return '';
+  }
+
+  let profileFetchTimeout = null;
+
+  function onProfileUrlInput() {
+    const url = document.getElementById('profileUrl')?.value?.trim();
+    const statusEl = document.getElementById('fetchStatus');
+    const previewEl = document.getElementById('profilePreview');
+    fetchedProfileData = {};
+    previewEl.style.display = 'none';
+    previewEl.innerHTML = '';
+
+    if (!url) { statusEl.textContent = ''; updateGenerateBtn(); return; }
+
+    // Always extract category from URL pattern immediately
+    const category = extractCategoryFromUrl(url);
+    if (category) fetchedProfileData.category = category;
+
+    // Debounce the Gemini URL fetch
+    clearTimeout(profileFetchTimeout);
+    if (url.includes('thumbtack.com')) {
+      statusEl.textContent = '⏳ Reading profile with AI…';
+      statusEl.style.color = 'var(--tt-muted)';
+      profileFetchTimeout = setTimeout(() => fetchProfileWithGemini(url), 800);
+    } else if (category) {
+      statusEl.textContent = `✅ Service category detected: ${category}`;
+      statusEl.style.color = 'var(--tt-green)';
+    }
+    updateGenerateBtn();
+  }
+
+  async function fetchProfileWithGemini(url) {
+    const statusEl = document.getElementById('fetchStatus');
+    const previewEl = document.getElementById('profilePreview');
+    try {
+      const jsonText = await callGemini(
+        `Fetch and read the Thumbtack pro profile at this URL: ${url}
+
+Extract the following information and return it as a JSON object (no explanation, just JSON):
+{
+  "name": "pro's name or business name",
+  "category": "service category (e.g. House Cleaning, Plumbing)",
+  "rating": 4.9,
+  "reviewCount": 120,
+  "bio": "intro/about text (first 300 chars)",
+  "hasPhoto": true,
+  "portfolioCount": 8,
+  "hasBackgroundCheck": true,
+  "topPro": false,
+  "yearsInBusiness": 5,
+  "faqAnswers": ["answer1", "answer2"]
+}
+
+Use null for any field you cannot find.`,
+        [],
+        true  // useUrlContext = true
+      );
+      // Extract JSON from response
+      const match = jsonText.match(/\{[\s\S]*\}/);
+      if (!match) throw new Error('No JSON in response');
+      const data = JSON.parse(match[0]);
+      // Merge with any category already extracted from URL
+      if (!data.category && fetchedProfileData.category) data.category = fetchedProfileData.category;
+      fetchedProfileData = data;
+      const filled = Object.values(data).filter(v => v !== null && v !== false && v !== 0 && v !== '').length;
+      statusEl.textContent = `✅ Profile read (${filled} fields extracted)`;
+      statusEl.style.color = 'var(--tt-green)';
+      renderProfilePreview(data, previewEl);
+      updateGenerateBtn();
+    } catch(e) {
+      // Fall back to just showing the category
+      const category = fetchedProfileData.category;
+      if (category) {
+        statusEl.textContent = `✅ Service category detected: ${category} (full profile unavailable)`;
+        statusEl.style.color = 'var(--tt-green)';
+      } else {
+        statusEl.textContent = `⚠️ Could not read profile — upload a screenshot instead`;
+        statusEl.style.color = 'var(--tt-muted)';
+      }
+    }
+  }
+
+  function renderProfilePreview(data, container) {
+    const chips = [];
+    if (data.name)           chips.push(`👤 <strong>${data.name}</strong>`);
+    if (data.category)       chips.push(`🔧 ${data.category}`);
+    if (data.rating)         chips.push(`⭐ ${parseFloat(data.rating).toFixed(1)}`);
+    if (data.reviewCount)    chips.push(`💬 ${data.reviewCount} reviews`);
+    if (data.topPro)         chips.push(`🏆 Top Pro`);
+    if (data.portfolioCount) chips.push(`📷 ${data.portfolioCount} photos`);
+    if (data.hasBackgroundCheck) chips.push(`✅ BG check`);
+    if (data.bio)            chips.push(`📝 Bio captured`);
+    if (data.faqAnswers?.length) chips.push(`❓ ${data.faqAnswers.length} FAQ answers`);
+    container.innerHTML = chips.map(c => `<span class="profile-chip">${c}</span>`).join('');
+    container.style.display = 'flex';
+  }
+
+  // ── END STRUCTURED FORM ────────────────────────────────
+
+  function showInitialRecs(scenario) {
+    const rec = scenarioRecs[scenario];
+    const el = document.getElementById('initialRecs');
+    if (!rec || !el) return;
+    const names = { unresponsive: 'Unresponsive Leads', nonhire: 'Non-Hires', shopping: 'Shopping Customers', cancelled: 'Cancelled Requests' };
+    el.innerHTML = `
+      <div class="initial-recs-header">🔍 Initial Assessment Guide &mdash; ${names[scenario]}</div>
+      <div class="initial-recs-body">
+        <div class="rec-col">
+          <div class="rec-col-title">⚠️ Top 3 Reasons</div>
+          ${rec.reasons.map(r => `<div class="rec-reason"><span class="rec-reason-icon">${r.icon}</span><div class="rec-reason-text"><strong>${r.title}</strong>${r.desc}</div></div>`).join('')}
+        </div>
+        <div class="rec-col">
+          <div class="rec-col-title">👁️ What to Review</div>
+          ${rec.review.map(r => `<div class="rec-check"><span class="rec-check-icon">${r.icon}</span><div class="rec-check-text"><strong>${r.tool}</strong> — ${r.what}</div></div>`).join('')}
+        </div>
+        <!-- What to Note Down moved to Step 3 structured form -->
+      </div>`;
+    el.classList.add('visible');
+  }
+
+  function selectScenario(btn) {
+    document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedScenario = btn.dataset.scenario;
+    showInitialRecs(selectedScenario);
+    renderProDataForm(selectedScenario);
+    updateGenerateBtn();
+  }
+
+  function updateGenerateBtn() {
+    const btn = document.getElementById('generateBtn');
+    const hasFormData = getProDataForPrompt().length > 5;
+    const hasFiles = uploadedFiles.length > 0;
+    btn.disabled = !(selectedScenario && (hasFormData || hasFiles));
+  }
+
+  // Image upload handlers
+  function handleDragOver(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').classList.add('dragover');
+  }
+
+  function handleDragLeave(e) {
+    document.getElementById('uploadZone').classList.remove('dragover');
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('uploadZone').classList.remove('dragover');
+    const files = Array.from(e.dataTransfer.files).filter(f =>
+      f.type.startsWith('image/') || f.type === 'application/pdf'
+    );
+    processFiles(files);
+  }
+
+  function handleFileSelect(e) {
+    const files = Array.from(e.target.files);
+    processFiles(files);
+    e.target.value = '';
+  }
+
+  // Compress an image file to JPEG ≤ MAX_B64 chars using Canvas
+  function compressImage(file, callback) {
+    const MAX_DIM = 1200;   // max width or height in px
+    const TARGET_B64 = 100000; // ~75 KB base64 target
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let { width, height } = img;
+        // Scale down if needed
+        if (width > MAX_DIM || height > MAX_DIM) {
+          if (width >= height) { height = Math.round((height / width) * MAX_DIM); width = MAX_DIM; }
+          else                 { width = Math.round((width / height) * MAX_DIM); height = MAX_DIM; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width; canvas.height = height;
+        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+        // Try progressively lower quality until it fits
+        let quality = 0.80;
+        let dataUrl;
+        do {
+          dataUrl = canvas.toDataURL('image/jpeg', quality);
+          quality -= 0.10;
+        } while (dataUrl.split(',')[1].length > TARGET_B64 && quality > 0.20);
+        callback(dataUrl, 'image/jpeg');
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function processFiles(files) {
+    files.forEach(file => {
+      const id = Date.now() + Math.random();
+      if (file.type === 'application/pdf') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const dataUrl = e.target.result;
+          const base64 = dataUrl.split(',')[1];
+          uploadedFiles.push({ id, type: 'pdf', dataUrl, base64, mediaType: 'application/pdf', name: file.name });
+          renderPreviews(); updateGenerateBtn();
+        };
+        reader.readAsDataURL(file);
+      } else {
+        // Compress image before storing
+        compressImage(file, (dataUrl, mediaType) => {
+          const base64 = dataUrl.split(',')[1];
+          uploadedFiles.push({ id, type: 'image', dataUrl, base64, mediaType, name: file.name });
+          renderPreviews(); updateGenerateBtn();
+        });
+      }
+    });
+  }
+
+  function removeFile(id) {
+    uploadedFiles = uploadedFiles.filter(f => f.id !== id);
+    renderPreviews();
+    updateGenerateBtn();
+  }
+
+  function renderPreviews() {
+    const container = document.getElementById('imagePreviews');
+    container.innerHTML = uploadedFiles.map(f => {
+      if (f.type === 'pdf') {
+        const shortName = f.name.length > 16 ? f.name.slice(0, 14) + '…' : f.name;
+        return `
+          <div class="img-thumb" style="background:#FEF3C7; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:4px;">
+            <span style="font-size:22px;">📄</span>
+            <span style="font-size:9px; color:#92400E; font-weight:600; text-align:center; word-break:break-all; line-height:1.2;">${shortName}</span>
+            <button class="img-thumb-remove" onclick="removeFile(${f.id})" title="Remove">✕</button>
+          </div>`;
+      } else {
+        return `
+          <div class="img-thumb">
+            <img src="${f.dataUrl}" alt="screenshot" />
+            <button class="img-thumb-remove" onclick="removeFile(${f.id})" title="Remove">✕</button>
+          </div>`;
+      }
+    }).join('');
+  }
+
+  function switchTab(tab, btn) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  async function generateCoaching() {
+    const proName = fetchedProfileData.name || document.getElementById('sf_pro_name')?.value?.trim() || 'the pro';
+    const categoryLine = (fetchedProfileData.category || document.getElementById('sf_service_cat')?.value?.trim())
+      ? ` (${fetchedProfileData.category || document.getElementById('sf_service_cat')?.value?.trim()})`
+      : '';
+    const scenario = selectedScenario;
+    const proData = getProDataForPrompt();
+
+    if (!scenario) return;
+
+    if (!proData && uploadedFiles.length === 0) {
+      const err = document.getElementById('errorBox');
+      err.textContent = '⚠️ Please fill in at least one field in Step 2, or add a screenshot before generating.';
+      err.classList.add('visible');
+      return;
+    }
+
+    // Show loading
+    document.getElementById('generateBtn').disabled = true;
+    document.getElementById('loadingBar').classList.add('active');
+    document.getElementById('loadingText').classList.add('active');
+    document.getElementById('errorBox').classList.remove('visible');
+    document.getElementById('resultsSection').classList.remove('visible');
+    const dataBlock = proData ? `\n\nPRO DATA:\n${proData}` : '';
+
+    const goodwillTemplates = {
+      unresponsive: `"Hi [Customer Name], just in case you found another solution, I wanted to wish you the best with your project. If you ever need help in the future, feel free to message me here anytime."`,
+      nonhire:      `"Thanks for letting me know, [Customer Name]. I'm glad you were able to get help. If you ever have another project come up, feel free to reach out to me here anytime. Happy to assist in the future."`,
+      shopping:     `"I appreciate the update, [Customer Name]! If you ever need help with this or another project down the road, I'm here and happy to assist. Just message me anytime."`,
+      cancelled:    `"No worries at all, [Customer Name]—thanks for the update. If anything changes or if you need assistance in the future, feel free to message me here anytime."`,
+    };
+    const goodwillTip = goodwillTemplates[scenario] || goodwillTemplates.unresponsive;
+
+    const prompt = `Thumbtack Pro Success Coach. Pro: ${proName}${categoryLine}. Issue: ${scenarioLabels[scenario]}.${dataBlock}
+
+Reply with EXACTLY these 3 sections:
+
+===PAIN_POINTS===
+2-3 sentences identifying core issues. Cite specific numbers from the data.
+
+===COACHING===
+Opening (3–5 sentences, warm and conversational — write like you're talking with the pro, not reading a script):
+Start with: "Thanks for letting me take a look at your profile and recent stats, [use pro name if known]." Immediately weave in something genuinely positive you noticed from the data — a strong review score, fast response time, Top Pro badge, good ranking, solid portfolio, whatever stands out. Then ease into what you want to help with: something like "That said, I did notice [1–2 things] we could tweak to help you [specific outcome — e.g. get more customers replying / convert more of those leads / reduce cancellations]." Keep the tone warm and direct — like you're a colleague who's rooting for them, not delivering a performance review.
+
+Tips: Write EXACTLY 3 tips (not counting the required goodwill tip). For EACH tip use this exact format:
+
+🔹 [Priority emoji] [Tip Title]
+Priority emoji must be one of: 🔴 (high — directly impacts leads, revenue, or ranking) | 🟡 (important — meaningfully improves conversions) | 🟢 (good practice — adds polish or future value)
+[Transition sentence flowing from previous topic — e.g. "Now that we've talked about X, let's move on to Y. This is important because Z, and here's what I'd recommend:"]
+What to do: [Specific 2nd-person action]
+Why it matters: [1 sentence]
+Try this: [Sample script, message, or concrete example]
+
+COACHING RULES — strictly follow:
+- Do NOT recommend asking questions already in the lead (target dates, job type, location are already there)
+- Search snippets are AUTO-GENERATED — pros cannot edit them
+- Profile photo = ONE only; say "replace" not "add another"
+- Pros can ONLY message customers who sent a lead first — cannot reach out to viewers
+- For before/after portfolio photos: recommend using their phone (before photo at job start, after when done), then a free split-image app like Canva, Layout (Instagram), or Google Photos collage. Also recommend referencing them in their intro and first message: e.g. "Check out my featured projects to see before and after examples of my work."
+- Insurance and licenses: whether required depends on the service category and location. Use conditional language like: "While license/insurance requirements vary by location and service type, having it listed can still reassure customers — especially for a job like [category]."
+- Shopping Customers scenario: the leads ALREADY came in — the pro was charged, the customer reached out, and then chose a different pro (or went quiet after asking for a quote). Do NOT suggest strategies for attracting more leads or improving search visibility. Focus purely on conversion: how the pro's profile, pricing presentation, and first message can make customers choose THEM over a competitor
+- Never recommend actions not possible on the Thumbtack platform
+- DATA-DRIVEN TIPS: Every single tip must reference at least one specific number, direct quote from a message example, or specific phrase from the bio/FAQ. Never give generic advice that could apply to any pro.
+- RESPONSE TIME: If response time is under 5 minutes, DO NOT write a tip about responding faster — instead mention it as a genuine strength in the opening.
+- RANKING: If ranking is "Part of Top 5", DO NOT suggest improving search visibility — acknowledge it as a strength. Focus on conversion instead.
+- REVIEWS: If review count > 50 AND rating ≥ 4.8, mention reviews as a clear strength in the opening; skip a dedicated reviews tip.
+- MESSAGE EXAMPLES: If a message example is provided, QUOTE IT DIRECTLY in the relevant tip (e.g. "I noticed your opening says '...' — here's how to sharpen it:") and rewrite it specifically for this pro. This is almost always 🔴.
+- BIO/FAQ: If bio or FAQ text is provided, reference SPECIFIC phrases from it rather than giving generic "fill out your bio" advice.
+- PORTFOLIO: If portfolio count ≥ 5 AND profile photo is present, skip the portfolio/photo tip unless you see a specific quality issue.
+- CONVERSION RATE (Non-Hire only): Calculate hires ÷ leads × 100. Under 5% = severe, 5–15% = moderate, over 15% = good context — calibrate your urgency accordingly.
+- CANCELLED JOBS: If job was booked before cancellation → the 🔴 tip MUST be about pre-job confirmation process (confirm day before, verify scope/price/timeline). If reason mentions price → address pricing clarity. If no reason given → focus on rapport-building before the job starts.
+- SHOPPING: If price is "Above average" or "Most expensive in market" → pricing strategy tip is 🔴 (help them differentiate on value, not just defend price). If "No pricing listed" → address this first as 🔴.
+
+Always include this as the 4th and FINAL tip (always visible, always last):
+🔹 💚 End With a Warm Goodwill Message
+[Transition sentence]
+What to do: Even when a lead goes cold, a job is cancelled, or a customer didn't hire — always send a warm closing message. It turns a lost lead into a future customer.
+Why it matters: Most pros go silent after a rejection, missing the chance to be remembered. A warm message costs nothing and builds long-term loyalty.
+Try this: ${goodwillTip}
+
+===EMAIL===
+Subject: [Short, friendly subject line]
+
+Hi {{{Case.ContactFirstName__c}}},
+
+This is {{{Sender.FirstName}}} from Thumbtack. I'm glad I had the chance to talk to you today.
+
+[1 sentence warmly acknowledging something positive from their profile or metrics]
+
+[1-2 sentences warmly naming the pattern noticed — no blame, no criticism]
+
+Here are a few things you can try this week:
+• [Action item with sample script]
+• [Action item with sample script]
+• [Action item with sample script]
+• Always end your conversations — even unresponsive ones — with a warm closing message. Try: ${goodwillTip}
+
+[1 sentence of genuine encouragement referencing their strengths]
+
+Best,
+{{{Sender.FirstName}}}
+Thumbtack Service and Support
+Thumbtack
+[Unsubscribe from email communications](https://www.thumbtack.com/profile/notifications)`;
+
+    try {
+      // Only pass files under ~150KB base64 (images are pre-compressed; PDFs may still be large)
+      const MAX_B64 = 200000;
+      const dataItems = [];
+      const skippedFiles = [];
+      uploadedFiles.forEach(f => {
+        if (f.base64.length > MAX_B64) {
+          skippedFiles.push(f.name || 'file');
+          return;
+        }
+        if (f.type === 'pdf') {
+          dataItems.push({ type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: f.base64 } });
+        } else {
+          dataItems.push({ type: 'image', source: { type: 'base64', media_type: f.mediaType, data: f.base64 } });
+        }
+      });
+      if (skippedFiles.length > 0) {
+        console.warn('Files skipped (too large for AI):', skippedFiles);
+      }
+
+      const result = await callGemini(prompt, dataItems);
+
+      // Parse the response
+      const painMatch = result.match(/===PAIN_POINTS===\s*([\s\S]*?)(?====COACHING===)/);
+      const coachingMatch = result.match(/===COACHING===\s*([\s\S]*?)(?====EMAIL===)/);
+      const emailMatch = result.match(/===EMAIL===\s*([\s\S]*?)$/);
+
+      const painText = painMatch ? painMatch[1].trim() : '';
+      const coachingText = coachingMatch ? coachingMatch[1].trim() : result;
+      const emailText = emailMatch ? emailMatch[1].trim() : '';
+
+      // Populate outputs
+      if (painText) {
+        document.getElementById('painSummaryText').innerHTML = renderMd(painText);
+        document.getElementById('painSummary').style.display = 'block';
+      }
+
+      document.getElementById('coachingText').innerHTML = renderCoachingSection(coachingText);
+      document.getElementById('emailText').innerHTML = renderMd(emailText || 'Email template not generated. Please try again.');
+
+      // Set scenario tag
+      const tag = document.getElementById('scenarioTag');
+      tag.textContent = scenarioLabels[scenario];
+      tag.className = 'scenario-tag ' + scenarioTagClasses[scenario];
+
+      // Warn about skipped large files
+      if (skippedFiles.length > 0) {
+        const warn = document.getElementById('errorBox');
+        warn.textContent = `⚠️ ${skippedFiles.length} file(s) were too large to send to the AI and were skipped: ${skippedFiles.join(', ')}. Try using smaller screenshots instead of full PDFs.`;
+        warn.classList.add('visible');
+      }
+
+      // Show results
+      document.getElementById('resultsSection').classList.add('visible');
+      document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      // Switch to coaching tab by default
+      switchTab('coaching', document.querySelector('.tab-btn'));
+
+    } catch (err) {
+      const errBox = document.getElementById('errorBox');
+      errBox.textContent = '⚠️ Something went wrong generating the coaching. Please try again. (' + (err.message || err) + ')';
+      errBox.classList.add('visible');
+    } finally {
+      document.getElementById('loadingBar').classList.remove('active');
+      document.getElementById('loadingText').classList.remove('active');
+      document.getElementById('generateBtn').disabled = false;
+      updateGenerateBtn();
+    }
+  }
+
+  // Lightweight markdown → HTML renderer (for pain points, email, preamble)
+  function renderMd(text) {
+    if (!text) return '';
+    return text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/^(🔹\s*.+)$/gm, '<div class="tip-header">$1</div>')
+      .replace(/^(What to do:|Why it matters:|Try this:|Opening:|Strengths I See:)/gm, '<strong>$1</strong>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^[•\-]\s+(.+)$/gm, '<li>$1</li>')
+      .replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>')
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/\n/g, '<br>')
+      .replace(/^/, '<p>').replace(/$/, '</p>')
+      .replace(/<p><\/p>/g, '')
+      .replace(/<p><br>/g, '<p>');
+  }
+
+  // Render body text inside a tip card
+  function renderTipBody(text) {
+    if (!text) return '';
+    // Escape HTML
+    let t = text
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    // Sub-labels: "What to do:", "Why it matters:", "Try this:"
+    t = t.replace(/^(What to do:|Why it matters:|Try this:)\s*/gm,
+      '<span class="tip-label">$1</span>');
+    // Bold **text**
+    t = t.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    // Italic *text*
+    t = t.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    // Bullet lines
+    t = t.replace(/^[•\-]\s+(.+)$/gm, '<li>$1</li>');
+    t = t.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, '<ul>$1</ul>');
+    // Newlines
+    t = t.replace(/\n{2,}/g, '</p><p>').replace(/\n/g, '<br>');
+    t = '<p>' + t + '</p>';
+    t = t.replace(/<p><\/p>/g, '').replace(/<p><br>/g, '<p>');
+    return t;
+  }
+
+  // Build a single tip card HTML
+  function buildTipCard(block) {
+    const lines = block.trim().split('\n');
+    const rawHeader = lines[0]; // e.g. "🔹 🔴 Tip Title"
+    const rest = lines.slice(1);
+
+    // Detect if first non-empty rest line is a transition (no sub-label keyword)
+    let transitionLine = '';
+    let bodyLines = rest;
+    if (rest.length > 0) {
+      const first = rest[0].trim();
+      if (first && !/^(What to do:|Why it matters:|Try this:)/.test(first)) {
+        // Treat as transition sentence
+        transitionLine = first
+          .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        bodyLines = rest.slice(1);
+      }
+    }
+
+    // Determine priority
+    let priorityClass, badgeClass, badgeLabel;
+    if (rawHeader.includes('🔴')) {
+      priorityClass = 'priority-red';   badgeClass = 'badge-red';    badgeLabel = '🔴 High Priority';
+    } else if (rawHeader.includes('🟡')) {
+      priorityClass = 'priority-amber'; badgeClass = 'badge-amber';  badgeLabel = '🟡 Important';
+    } else if (rawHeader.includes('💚') || /goodwill/i.test(rawHeader)) {
+      priorityClass = 'priority-goodwill'; badgeClass = 'badge-goodwill'; badgeLabel = '💚 Goodwill';
+    } else {
+      priorityClass = 'priority-green'; badgeClass = 'badge-green';  badgeLabel = '🟢 Good Practice';
+    }
+
+    // Clean header title (strip 🔹 and priority emoji)
+    const titleText = rawHeader
+      .replace(/^🔹\s*/, '')
+      .replace(/[🔴🟡🟢💚]\s*/, '')
+      .trim()
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+    const bodyHtml = renderTipBody(bodyLines.join('\n'));
+
+    return `<div class="tip-card ${priorityClass}">
+  <div class="tip-card-header">
+    <span class="tip-title">${titleText}</span>
+    <span class="tip-badge ${badgeClass}">${badgeLabel}</span>
+  </div>
+  <div class="tip-card-body">
+    ${transitionLine ? `<span class="tip-transition">${transitionLine}</span>` : ''}
+    ${bodyHtml}
+  </div>
+</div>`;
+  }
+
+  // Main coaching section renderer — splits on 🔹, shows top 3 + goodwill always
+  function renderCoachingSection(text) {
+    if (!text) return '';
+
+    // Split: everything before first 🔹 is preamble; each 🔹 starts a tip
+    const parts = text.split(/(?=🔹)/);
+    const preamble = parts[0].trim();
+    const tipBlocks = parts.slice(1);
+
+    // Classify tips
+    const goodwillTips = [];
+    const regularTips  = [];
+    tipBlocks.forEach(block => {
+      const firstLine = block.split('\n')[0];
+      if (/💚/i.test(firstLine) || /goodwill/i.test(firstLine)) {
+        goodwillTips.push(block);
+      } else {
+        regularTips.push(block);
+      }
+    });
+
+    const alwaysShow = regularTips.slice(0, 3);
+    const extraTips  = regularTips.slice(3);
+
+    let html = '<div class="coaching-output">';
+
+    // Preamble (Opening + Strengths)
+    if (preamble) {
+      html += `<div class="coaching-preamble">${renderMd(preamble)}</div>`;
+    }
+
+    // Always-visible tips (up to 3)
+    alwaysShow.forEach(b => { html += buildTipCard(b); });
+
+    // Extra tips hidden behind button
+    if (extraTips.length > 0) {
+      html += `<div id="extraTipsContainer" style="display:none;">`;
+      extraTips.forEach(b => { html += buildTipCard(b); });
+      html += `</div>`;
+      html += `<button class="show-more-btn" id="showMoreTipsBtn"
+        onclick="toggleMoreTips(this, 'extraTipsContainer', ${extraTips.length})">
+        ＋ Show ${extraTips.length} more tip${extraTips.length > 1 ? 's' : ''}
+      </button>`;
+    }
+
+    // Goodwill tip always last
+    goodwillTips.forEach(b => { html += buildTipCard(b); });
+
+    html += '</div>';
+    return html;
+  }
+
+  function toggleMoreTips(btn, containerId, count) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    const hidden = el.style.display === 'none';
+    el.style.display = hidden ? 'block' : 'none';
+    btn.textContent = hidden
+      ? '− Show fewer tips'
+      : `＋ Show ${count} more tip${count > 1 ? 's' : ''}`;
+  }
+
+  function copyText(sourceId, btnId) {
+    const text = document.getElementById(sourceId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById(btnId);
+      btn.textContent = '✅ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '📋 Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function resetTool() {
+    clearProDataForm();
+    const recsEl = document.getElementById('initialRecs');
+    if (recsEl) recsEl.classList.remove('visible');
+    document.querySelectorAll('.scenario-btn').forEach(b => b.classList.remove('selected'));
+    selectedScenario = null;
+    uploadedFiles = [];
+    renderPreviews();
+    document.getElementById('resultsSection').classList.remove('visible');
+    document.getElementById('errorBox').classList.remove('visible');
+    document.getElementById('painSummary').style.display = 'none';
+    updateGenerateBtn();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── REFUND CALCULATOR ────────────────────────────────
+  function calcRefundPct() {
+    const requested = parseFloat(document.getElementById('rc_requested').value) || 0;
+    const totalRefunds = parseFloat(document.getElementById('rc_total_refunds').value) || 0;
+    const totalCharges = parseFloat(document.getElementById('rc_total_charges').value) || 0;
+    const resultEl = document.getElementById('rc_result');
+    const approvalEl = document.getElementById('rc_approval');
+    if (!totalCharges) {
+      resultEl.textContent = '—';
+      resultEl.className = 'refund-result-value';
+      approvalEl.style.display = 'none';
+      return;
+    }
+    const pct = ((requested + totalRefunds) / totalCharges) * 100;
+    resultEl.textContent = pct.toFixed(1) + '%';
+    // Color the percentage itself
+    resultEl.className = 'refund-result-value ' +
+      (pct <= 5 ? 'pct-low' : pct <= 25 ? 'pct-mid' : 'pct-high');
+    // Approval badge + Slack button
+    const slackBtn = document.getElementById('rc_slack_btn');
+    if (pct <= 5) {
+      approvalEl.textContent = '✅ Approved';
+      approvalEl.className = 'refund-approval approved';
+      approvalEl.style.display = 'block';
+      slackBtn.style.display = 'none';
+    } else {
+      approvalEl.style.display = 'none'; // just show the Slack button, no badge needed
+      slackBtn.style.display = 'flex';
+    }
+  }
+
+  // ── APPROVAL REQUEST MODAL ───────────────────────────
+  function openApprovalModal() {
+    // Pre-fill case ID from the case form if present
+    const caseIdEl = document.getElementById('cf_case_id');
+    if (caseIdEl && caseIdEl.value.trim()) {
+      document.getElementById('am_case_id').value = caseIdEl.value.trim();
+    }
+    // Pre-fill refund reason from case form if present
+    const refundReasonEl = document.getElementById('cf_refund_reason');
+    if (refundReasonEl && refundReasonEl.value.trim()) {
+      document.getElementById('am_refund_reason').value = refundReasonEl.value.trim();
+    }
+    // Build the summary line from calculator values
+    const requested  = parseFloat(document.getElementById('rc_requested').value) || 0;
+    const totalRef   = parseFloat(document.getElementById('rc_total_refunds').value) || 0;
+    const totalChg   = parseFloat(document.getElementById('rc_total_charges').value) || 0;
+    const pct        = totalChg ? (((requested + totalRef) / totalChg) * 100).toFixed(1) : '—';
+    const fmt = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    document.getElementById('am_summary').innerHTML =
+      `⚠️ &nbsp;<strong>${pct}% of Charged Revenue</strong> &nbsp;·&nbsp; ` +
+      `Requested: <strong>${fmt(requested)}</strong> &nbsp;·&nbsp; ` +
+      `Total Refunds: <strong>${fmt(totalRef)}</strong> &nbsp;·&nbsp; ` +
+      `Total Charges: <strong>${fmt(totalChg)}</strong>`;
+    // Reset status
+    document.getElementById('am_send_status').textContent = '';
+    document.getElementById('am_send_btn').disabled = false;
+    document.getElementById('approvalModal').classList.add('open');
+  }
+
+  function closeApprovalModal() {
+    document.getElementById('approvalModal').classList.remove('open');
+  }
+
+  async function sendApprovalRequest() {
+    const sendBtn    = document.getElementById('am_send_btn');
+    const statusEl   = document.getElementById('am_send_status');
+    const caseId     = document.getElementById('am_case_id').value.trim();
+    const proPk      = document.getElementById('am_pro_pk').value.trim();
+    const reason     = document.getElementById('am_refund_reason').value.trim();
+    const leadLinks  = document.getElementById('am_lead_links').value.trim();
+    const remarks    = document.getElementById('am_remarks').value.trim();
+
+    if (!caseId || !proPk) {
+      statusEl.textContent = '⚠️ Case ID and Pro User PK are required.';
+      statusEl.style.color = 'var(--tt-error)';
+      return;
+    }
+
+    const requested  = parseFloat(document.getElementById('rc_requested').value) || 0;
+    const totalRef   = parseFloat(document.getElementById('rc_total_refunds').value) || 0;
+    const totalChg   = parseFloat(document.getElementById('rc_total_charges').value) || 0;
+    const pct        = totalChg ? (((requested + totalRef) / totalChg) * 100).toFixed(1) : '—';
+    const fmt = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    const message =
+`🚨 *Refund Manager Approval Request*
+Submitted by *${agentName || 'Unknown Agent'}*
+
+*Case ID:* ${caseId}
+*Pro User PK:* ${proPk}
+
+💰 *Refund Breakdown*
+• Requested Amount: *${fmt(requested)}*
+• Total Refunds Revenue: *${fmt(totalRef)}*
+• Total Charges Revenue: *${fmt(totalChg)}*
+• % of Charged Revenue: *${pct}%* ⚠️
+
+📝 *Refund Reason:* ${reason || '_Not provided_'}
+
+🔗 *Disputed Lead Links:*
+${leadLinks || '_None provided_'}
+
+💬 *Remarks:* ${remarks || '_None_'}`;
+
+    sendBtn.disabled = true;
+    statusEl.textContent = '⏳ Sending…';
+    statusEl.style.color = 'var(--tt-muted)';
+
+    try {
+      if (CONFIG.SLACK_WEBHOOK_URL) {
+        // Send via Incoming Webhook
+        const slackBody = {
+          text: message,
+          unfurl_links: false
+        };
+        const resp = await fetch(CONFIG.SLACK_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(slackBody)
+        });
+        if (!resp.ok) throw new Error(`Slack webhook error ${resp.status}`);
+        statusEl.textContent = '✅ Sent to #special-ops-team-refund-approval!';
+        statusEl.style.color = 'var(--tt-green-dark)';
+        setTimeout(() => closeApprovalModal(), 2500);
+      } else {
+        // Clipboard fallback (no webhook configured yet)
+        await navigator.clipboard.writeText(message);
+        statusEl.textContent = '📋 Copied! Paste in #special-ops-team-refund-approval';
+        statusEl.style.color = 'var(--tt-green-dark)';
+        setTimeout(() => closeApprovalModal(), 3000);
+      }
+    } catch(e) {
+      statusEl.textContent = '⚠️ Could not send: ' + (e.message || e);
+      statusEl.style.color = 'var(--tt-error)';
+      sendBtn.disabled = false;
+    }
+  }
+
+  function clearRefundCalc() {
+    ['rc_requested', 'rc_total_refunds', 'rc_total_charges'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    const resultEl = document.getElementById('rc_result');
+    resultEl.textContent = '—';
+    resultEl.className = 'refund-result-value';
+    const approvalEl = document.getElementById('rc_approval');
+    approvalEl.style.display = 'none';
+    approvalEl.textContent = '';
+    document.getElementById('rc_slack_btn').style.display = 'none';
+  }
+
+  // ── CASE FORM ────────────────────────────────────────
+  let agentName = '';
+  const AGENT_KEY = 'ttCoachAgent';
+
+  function toggleRefundReason(cb) {
+    document.getElementById('cf_refund_reason_group').style.display = cb.checked ? 'block' : 'none';
+  }
+
+  function initAgentIdentity() {
+    const stored = localStorage.getItem(AGENT_KEY);
+    if (stored) {
+      agentName = stored;
+      document.getElementById('cf_agent_name_text').textContent = stored;
+      document.getElementById('cf_agent_display').style.display = 'flex';
+      document.getElementById('cf_agent_input_wrap').style.display = 'none';
+    }
+    // If no stored name, input wrap is already visible — agent will type their name
+  }
+
+  function saveAgentName() {
+    const val = document.getElementById('cf_agent_name_input').value.trim();
+    if (!val) return;
+    agentName = val;
+    localStorage.setItem(AGENT_KEY, val);
+    document.getElementById('cf_agent_name_text').textContent = val;
+    document.getElementById('cf_agent_display').style.display = 'flex';
+    document.getElementById('cf_agent_input_wrap').style.display = 'none';
+  }
+
+  function editAgentName() {
+    document.getElementById('cf_agent_display').style.display = 'none';
+    document.getElementById('cf_agent_input_wrap').style.display = 'block';
+    document.getElementById('cf_agent_name_input').value = agentName;
+    document.getElementById('cf_agent_name_input').focus();
+  }
+
+  async function submitCase() {
+    const status = document.getElementById('caseSubmitStatus');
+    const caseId = document.getElementById('cf_case_id').value.trim();
+    if (!caseId) {
+      status.textContent = '⚠️ Case ID is required.';
+      status.style.color = 'var(--tt-error)';
+      return;
+    }
+
+    const now = new Date();
+    const submittedAt = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      + ' · ' + now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+    const primaryTheme  = document.getElementById('cf_primary_theme').value.trim();
+    const secondaryTheme = document.getElementById('cf_secondary_theme').value.trim();
+    const adminGrant    = document.getElementById('cf_admin_grant').checked;
+    const refund        = document.getElementById('cf_refund').checked;
+    const refundReason  = document.getElementById('cf_refund_reason').value.trim();
+    const onboarded     = document.getElementById('cf_onboarded').checked;
+
+    // Optimistic UI — show success and clear fields immediately
+    status.innerHTML = `✅ Logged &nbsp;·&nbsp; <strong>${agentName || 'Unknown'}</strong> &nbsp;·&nbsp; ${submittedAt}`;
+    status.style.color = 'var(--tt-green-dark)';
+
+    document.getElementById('cf_case_id').value = '';
+    document.getElementById('cf_primary_theme').value = '';
+    document.getElementById('cf_secondary_theme').value = '';
+    document.getElementById('cf_admin_grant').checked = false;
+    document.getElementById('cf_refund').checked = false;
+    document.getElementById('cf_onboarded').checked = false;
+    document.getElementById('cf_refund_reason').selectedIndex = 0;
+    document.getElementById('cf_refund_reason_group').style.display = 'none';
+    setTimeout(() => { status.innerHTML = ''; }, 5000);
+
+    // Fire Coda log in background — doesn't block the UI
+    codaAddRow(CONFIG.CODA_SUBMISSIONS_TABLE_ID, {
+      'c-m29586O3Xj': submittedAt,
+      'c-z-FyeXvI55': agentName,
+      'c-HtnDp78pQS': caseId,
+      'c-TlKrgxxrcI': primaryTheme,
+      'c-Z6YjDzsu9t': secondaryTheme,
+      'c-gPT481Qefj': adminGrant,
+      'c-PreqmDMdWs': refund,
+      'c-xHbxAYhJVk': refundReason,
+      'c-0elIfZcz6Y': onboarded
+    }).catch(e => console.warn('Coda log failed silently:', e));
+  }
+
+  function initCaseForm() { /* date now captured at submit time */ }
+
+  // ── UPDATES ─────────────────────────────────────────
+  const PAGE_SIZE = 50; // safe Coda limit; all pages auto-load in background
+  let allUpdates = [];
+  let filteredUpdates = [];
+  let displayedCount = 0;
+  let activeCat = 'All';
+  let isLoadingUpdates = false;
+  let totalLoaded = 0;
+  let TOTAL_ROWS = null; // resolved dynamically from API response
+  let thisWeekOnly = false;  // off by default — show all, sorted newest first
+  let expandedTerms = [];    // AI-expanded search terms
+  let searchDebounce = null;
+  let loadedIds = new Set(); // tracks row IDs already in allUpdates (prevents dupes when jumping pages)
+  let pageTokenMap = {}; // maps offset → Coda pageToken for REST API pagination
+
+  // ── Plain text extraction (for search) ─────────────
+  function extractSlateText(val) {
+    if (!val) return '';
+    if (typeof val === 'string') return val;
+    if (typeof val === 'object' && val.root) return extractSlateNodes(val.root.children || []);
+    return String(val);
+  }
+
+  function extractSlateNodes(nodes) {
+    if (!nodes) return '';
+    return nodes.map(n => {
+      if (n.text !== undefined) return n.text;
+      if (n.children) return extractSlateNodes(n.children);
+      if (n.value && n.value.name) return n.value.name;
+      return '';
+    }).join('');
+  }
+
+  // ── Rich HTML rendering (for display) ──────────────
+  function esc(str) {
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function renderInline(nodes) {
+    if (!nodes) return '';
+    return nodes.map(n => {
+      if (n.text !== undefined) {
+        let t = esc(n.text);
+        if (n.bold)      t = `<strong>${t}</strong>`;
+        if (n.italic)    t = `<em>${t}</em>`;
+        if (n.underline) t = `<u>${t}</u>`;
+        if (n.monospace) t = `<code>${t}</code>`;
+        return t;
+      }
+      if (n.type === 'InlineStructuredValue') {
+        const v = n.value || {};
+        if (v.url) return `<a href="${esc(v.url)}" target="_blank" rel="noopener">${esc(v.name || v.url)}</a>`;
+        if (v.type === 'ref' && v.objectId === 'Global-Blobs') {
+          const blobId = esc(v.identifier || '');
+          const blobName = esc(v.name || 'image');
+          return `<a class="img-btn" href="https://codahosted.io/blobs/${blobId}" target="_blank" rel="noopener" title="Opens in your browser — requires Coda login">📷 View: ${blobName} ↗</a>`;
+        }
+        if (v.name) return esc(v.name);
+      }
+      if (n.children) return renderInline(n.children);
+      return '';
+    }).join('');
+  }
+
+  function slateToHtml(val) {
+    if (!val) return '';
+    if (typeof val === 'string') return `<p>${esc(val)}</p>`;
+    const nodes = val?.root?.children || [];
+    let html = '';
+    let i = 0;
+    while (i < nodes.length) {
+      const n = nodes[i];
+      const style = n.style || 'Paragraph';
+      const indent = (n.lineLevel || 0) * 16;
+      const content = renderInline(n.children || []);
+
+      if (style === 'BulletedList') {
+        html += '<ul style="margin:4px 0 4px 18px;padding:0">';
+        while (i < nodes.length && nodes[i].style === 'BulletedList') {
+          const ind = (nodes[i].lineLevel || 0) * 14;
+          html += `<li style="margin:2px 0;margin-left:${ind}px">${renderInline(nodes[i].children||[])}</li>`;
+          i++;
+        }
+        html += '</ul>';
+        continue;
+      }
+      if (style === 'NumberedList') {
+        html += '<ol style="margin:4px 0 4px 18px;padding:0">';
+        while (i < nodes.length && nodes[i].style === 'NumberedList') {
+          html += `<li style="margin:2px 0">${renderInline(nodes[i].children||[])}</li>`;
+          i++;
+        }
+        html += '</ol>';
+        continue;
+      }
+      if (style === 'H1' || style === 'Heading1') html += `<h3>${content}</h3>`;
+      else if (style === 'H2') html += `<h4>${content}</h4>`;
+      else if (style === 'H3') html += `<h5>${content}</h5>`;
+      else if (style === 'BlockQuote') html += `<blockquote>${content}</blockquote>`;
+      else if (content.trim()) html += `<p style="margin:4px 0">${content}</p>`;
+      i++;
+    }
+    return html;
+  }
+
+  function parseDate(val) {
+    if (!val) return '';
+    if (typeof val === 'object' && val.input) return val.input;
+    const txt = extractSlateText(val).trim();
+    return txt;
+  }
+
+  function getCategories(val) {
+    if (!Array.isArray(val)) return [];
+    return val.map(v => v.name || 'Other');
+  }
+
+  function getMondayFormula() {
+    // Returns CFL filterFormula string to get rows from this week (Mon onwards)
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun..6=Sat
+    const daysBack = day === 0 ? 6 : day - 1; // days since Monday
+    const mon = new Date(now);
+    mon.setDate(now.getDate() - daysBack);
+    const m = mon.getMonth() + 1;
+    const d = mon.getDate();
+    const y = mon.getFullYear();
+    return `[Date] >= Date(${y}, ${m}, ${d})`;
+  }
+
+  // Returns true if there are more pages to load
+  async function loadUpdates(offset = 0) {
+    if (isLoadingUpdates) return false;
+    isLoadingUpdates = true;
+    if (offset === 0) {
+      // Full reset on first page
+      allUpdates = [];
+      loadedIds.clear();
+      pageTokenMap = {};
+      TOTAL_ROWS = null;
+      document.getElementById('updatesStatus').style.display = 'block';
+      document.getElementById('updatesStatus').textContent = 'Loading updates from Coda…';
+    }
+    document.getElementById('loadMoreBtn').disabled = true;
+
+    try {
+      const raw = await codaGetRows(CONFIG.CODA_UPDATES_TABLE_ID, { limit: PAGE_SIZE, pageToken: offset > 0 ? pageTokenMap[offset] : null });
+
+      const rows = raw.items || [];
+      const hasMoreFlag = !!raw.nextPageToken;
+      // Store next page token for subsequent fetches
+      if (raw.nextPageToken) {
+        const nextOffset = offset + PAGE_SIZE;
+        pageTokenMap[nextOffset] = raw.nextPageToken;
+      }
+      const parsed = rows.map(row => {
+        const v = row.values || {};
+        // REST API may return raw values (not wrapped in {value:...})
+        const getVal = (col) => {
+          const cell = v[col];
+          return (cell && typeof cell === 'object' && 'value' in cell) ? cell.value : cell;
+        };
+        const dateStr = parseDate(getVal('c-YtSk6iYRsf'));
+        return {
+          id: row.id,
+          date: dateStr,
+          dateObj: parseUpdateDate(dateStr),
+          subject: extractSlateText(getVal('c-kG93_q-paO')),
+          categories: getCategories(getVal('c-TBAnw9CTua')),
+          details: extractSlateText(getVal('c-QM7o6hZr1_')),
+          detailsRaw: getVal('c-QM7o6hZr1_'),
+          relatedLinks: extractSlateText(getVal('c-XtM2xptF8q')),
+          relatedLinksRaw: getVal('c-XtM2xptF8q'),
+          keywords: extractSlateText(getVal('c-uYq_CPeXQH'))
+        };
+      });
+
+      // Deduplicate — skip rows already loaded (can happen when jumping to last page)
+      const newRows = parsed.filter(r => r.id && !loadedIds.has(r.id));
+      newRows.forEach(r => loadedIds.add(r.id));
+      allUpdates = allUpdates.concat(newRows);
+      // Sort newest first
+      allUpdates.sort((a, b) => {
+        if (!a.dateObj && !b.dateObj) return 0;
+        if (!a.dateObj) return 1;
+        if (!b.dateObj) return -1;
+        return b.dateObj - a.dateObj;
+      });
+      totalLoaded = allUpdates.length;
+      TOTAL_ROWS = null; // REST API doesn't provide total count — load until no more pages
+      const hasMoreForLabel = hasMoreFlag === true;
+      const totalLabel = `${totalLoaded}`;
+      document.getElementById('updateCount').textContent = hasMoreForLabel
+        ? `Loading… ${totalLabel}`
+        : `${totalLabel} loaded`;
+
+      if (parsed.length > 0) document.getElementById('bulkActions').style.display = 'flex';
+
+      if (parsed.length === 0 && offset === 0) {
+        document.getElementById('updatesStatus').textContent = '⚠️ No rows returned. Please try reloading.';
+      } else {
+        document.getElementById('updatesStatus').style.display = 'none';
+      }
+
+      filterUpdates();
+
+      const hasMore = hasMoreFlag === true;
+      // Only show manual Load More if auto-load somehow stalled
+      document.getElementById('loadMoreBtn').style.display = hasMore ? 'block' : 'none';
+      document.getElementById('loadMoreBtn').disabled = false;
+
+      return hasMore;
+
+    } catch(err) {
+      document.getElementById('updatesStatus').textContent = '⚠️ Could not load updates: ' + (err.message || err);
+      return false;
+    } finally {
+      isLoadingUpdates = false;
+    }
+  }
+
+  // Load all pages using token-based pagination
+  async function autoLoadAll() {
+    if (!CONFIG.GEMINI_API_KEY || !CONFIG.CODA_API_TOKEN) return; // wait for settings
+    // REST API uses token-based pagination — load pages until exhausted
+    await loadUpdates(0);
+    let offset = PAGE_SIZE;
+    while (pageTokenMap[offset]) {
+      await new Promise(r => setTimeout(r, 150));
+      await loadUpdates(offset);
+      offset += PAGE_SIZE;
+    }
+  }
+
+  function loadMoreUpdates() {
+    loadUpdates(allUpdates.length);
+  }
+
+  function getWeekStart() {
+    const now = new Date();
+    const day = now.getDay();
+    const diff = day === 0 ? -6 : 1 - day; // back to Monday
+    const mon = new Date(now);
+    mon.setDate(now.getDate() + diff);
+    mon.setHours(0, 0, 0, 0);
+    return mon;
+  }
+
+  function parseUpdateDate(str) {
+    if (!str) return null;
+    // handles M/D/YYYY
+    const d = new Date(str);
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function toggleThisWeek() {
+    thisWeekOnly = !thisWeekOnly;
+    const btn = document.getElementById('thisWeekBtn');
+    btn.classList.toggle('active', thisWeekOnly);
+    // Data is already loaded — just re-filter client-side
+    filterUpdates();
+  }
+
+  function setCatFilter(select) {
+    activeCat = select.value;
+    filterUpdates();
+  }
+
+  function onSearchInput() {
+    clearTimeout(searchDebounce);
+    expandedTerms = [];
+    document.getElementById('aiSearchStatus').textContent = '';
+    filterUpdates(); // immediate exact match
+    const q = (document.getElementById('updatesSearch')?.value || '').trim();
+    if (q.length > 2) {
+      searchDebounce = setTimeout(() => expandSearchWithAI(q), 900);
+    }
+  }
+
+  async function expandSearchWithAI(q) {
+    document.getElementById('aiSearchStatus').textContent = '✨ Expanding search with AI…';
+    try {
+      const text = await callGemini(
+        `You are a search assistant for a Thumbtack customer support team.
+Given the search query below, return a JSON array of 8-12 related keywords and synonyms that someone might use when looking for the same topic in a support playbook.
+Include the original term, common abbreviations, related concepts, and Thumbtack-specific terminology where relevant.
+Return ONLY a valid JSON array of lowercase strings, no explanation.
+
+Query: "${q}"`, []
+      );
+      const match = text.match(/\[[\s\S]*?\]/);
+      if (match) {
+        expandedTerms = JSON.parse(match[0]).map(t => t.toLowerCase());
+        document.getElementById('aiSearchStatus').textContent =
+          '✨ AI expanded: ' + expandedTerms.slice(0,6).join(', ') + (expandedTerms.length > 6 ? '…' : '');
+        filterUpdates();
+      } else {
+        document.getElementById('aiSearchStatus').textContent = '';
+      }
+    } catch(e) {
+      document.getElementById('aiSearchStatus').textContent = '';
+    }
+  }
+
+  function filterUpdates() {
+    const q = (document.getElementById('updatesSearch')?.value || '').trim().toLowerCase();
+    const weekStart = getWeekStart();
+
+    filteredUpdates = allUpdates.filter(u => {
+      // Category filter
+      const catMatch = activeCat === 'All' || u.categories.includes(activeCat);
+      if (!catMatch) return false;
+
+      // Text search: when a query is active, skip the date filter so results aren't hidden
+      if (q) {
+        const hay = (u.subject + ' ' + u.details + ' ' + u.keywords).toLowerCase();
+        const allTerms = [q, ...expandedTerms];
+        return allTerms.some(t => hay.includes(t));
+      }
+
+      // This week filter only applies when not searching
+      if (thisWeekOnly) {
+        const d = parseUpdateDate(u.date);
+        if (!d || d < weekStart) return false;
+      }
+
+      return true;
+    });
+    renderUpdates();
+  }
+
+  function renderUpdates() {
+    const list = document.getElementById('updatesList');
+    if (filteredUpdates.length === 0) {
+      list.innerHTML = '<div class="updates-status">No updates match your search.</div>';
+      return;
+    }
+    list.innerHTML = filteredUpdates.map((u, i) => {
+      const cats = u.categories.length
+        ? u.categories.map(c => `<span class="update-cat cat-${c}">${c}</span>`).join('')
+        : '<span class="update-cat cat-Other">Other</span>';
+
+      const readStatus = getReadStatus(u.id);
+      const richHtml = slateToHtml(u.detailsRaw) || (u.details ? `<p>${esc(u.details)}</p>` : '<p style="color:var(--tt-muted)">No details.</p>');
+      const linksHtml = buildRelatedLinks(u.relatedLinksRaw, u.relatedLinks);
+
+      return `
+        <div class="update-card status-${readStatus}" id="ucard-${i}" data-rowid="${u.id}">
+          <div class="update-card-header" onclick="toggleCard(${i})">
+            <div class="update-subject">${esc(u.subject) || '(no subject)'}</div>
+            <button class="card-popup-btn" title="Open in popup"
+              onclick="event.stopPropagation(); openUpdateModal(${i})">⤢</button>
+            <div class="update-chevron">▼</div>
+          </div>
+          <div class="update-details">
+            ${richHtml}
+            ${linksHtml}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function buildRelatedLinks(raw, plain) {
+    // Try to extract URLs from rich text or plain string
+    const links = [];
+    if (raw && typeof raw === 'object' && raw.root) {
+      // Walk Slate to find all InlineStructuredValue urls
+      function findLinks(nodes) {
+        if (!nodes) return;
+        for (const n of nodes) {
+          if (n.type === 'InlineStructuredValue' && n.value?.url) {
+            links.push({ url: n.value.url, name: n.value.name || n.value.url });
+          }
+          if (n.children) findLinks(n.children);
+        }
+      }
+      findLinks(raw.root.children || []);
+    }
+    // Also parse plain text URLs
+    if (plain) {
+      const urlRegex = /https?:\/\/[^\s,)]+/g;
+      let m;
+      while ((m = urlRegex.exec(plain)) !== null) {
+        if (!links.find(l => l.url === m[0])) links.push({ url: m[0], name: m[0] });
+      }
+    }
+    if (links.length === 0) return '';
+    return `<div class="related-links">
+      <div class="related-links-label">🔗 Related Links</div>
+      ${links.map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.name)}</a>`).join('')}
+    </div>`;
+  }
+
+  // ─── Read / Unread tracking ───────────────────────────────────────────────
+  const READ_KEY = 'ttCoachReadLog';
+  const READ_THRESHOLD_MS = 3 * 60 * 1000; // 3 minutes
+
+  function getReadLog() {
+    try { return JSON.parse(localStorage.getItem(READ_KEY) || '{}'); } catch(e) { return {}; }
+  }
+
+  function getReadStatus(rowId) {
+    if (!rowId) return 'unread';
+    const log = getReadLog();
+    const entry = log[rowId];
+    if (!entry) return 'unread';
+    if (entry.status === 'read') return 'read';
+    if (entry.status === 'reading') return 'reading';
+    return 'unread';
+  }
+
+  function markAsRead(rowId) {
+    if (!rowId) return;
+    const log = getReadLog();
+    log[rowId] = { status: 'read', readAt: Date.now() };
+    localStorage.setItem(READ_KEY, JSON.stringify(log));
+  }
+
+  function markAsReading(rowId) {
+    if (!rowId) return;
+    const log = getReadLog();
+    if (log[rowId]?.status === 'read') return; // already read
+    log[rowId] = { status: 'reading', openedAt: Date.now() };
+    localStorage.setItem(READ_KEY, JSON.stringify(log));
+  }
+
+  function markAllRead() {
+    const log = getReadLog();
+    filteredUpdates.forEach(u => {
+      if (u.id) log[u.id] = { status: 'read', readAt: Date.now() };
+    });
+    localStorage.setItem(READ_KEY, JSON.stringify(log));
+    // Refresh card colors
+    filteredUpdates.forEach((u, i) => updateCardStatus(i, 'read'));
+  }
+
+  // Timers for 3-minute read tracking
+  const readTimers = {};
+
+  function updateCardStatus(i, status) {
+    const card = document.getElementById('ucard-' + i);
+    if (!card) return;
+    card.classList.remove('status-unread', 'status-reading', 'status-read');
+    card.classList.add('status-' + status);
+  }
+
+  function toggleCard(i) {
+    const card = document.getElementById('ucard-' + i);
+    if (!card) return;
+    const wasOpen = card.classList.contains('open');
+    card.classList.toggle('open');
+    const rowId = card.dataset.rowid;
+    if (!wasOpen) {
+      // Card is now open — mark as reading
+      if (getReadStatus(rowId) !== 'read') {
+        markAsReading(rowId);
+        updateCardStatus(i, 'reading');
+        clearTimeout(readTimers[rowId]);
+        readTimers[rowId] = setTimeout(() => {
+          markAsRead(rowId);
+          updateCardStatus(i, 'read');
+        }, READ_THRESHOLD_MS);
+      }
+    } else {
+      // Card closed — cancel timer if still pending
+      if (rowId) clearTimeout(readTimers[rowId]);
+    }
+  }
+
+  // ─── Expand All / Collapse All ─────────────────────────────────────────────
+  function expandAll() {
+    filteredUpdates.forEach((u, i) => {
+      const card = document.getElementById('ucard-' + i);
+      if (card && !card.classList.contains('open')) {
+        card.classList.add('open');
+        const rowId = card.dataset.rowid;
+        if (getReadStatus(rowId) !== 'read') {
+          markAsReading(rowId);
+          updateCardStatus(i, 'reading');
+          clearTimeout(readTimers[rowId]);
+          readTimers[rowId] = setTimeout(() => {
+            markAsRead(rowId);
+            updateCardStatus(i, 'read');
+          }, READ_THRESHOLD_MS);
+        }
+      }
+    });
+  }
+
+  function collapseAll() {
+    filteredUpdates.forEach((u, i) => {
+      const card = document.getElementById('ucard-' + i);
+      if (card) {
+        card.classList.remove('open');
+        const rowId = card.dataset.rowid;
+        if (rowId) clearTimeout(readTimers[rowId]);
+      }
+    });
+  }
+
+  function showImg(blobId, name) {
+    // Coda blob URLs require an active Coda session.
+    // The artifact's sandboxed frame doesn't have that session, but the
+    // user's system browser does — so we open the URL there directly.
+    const url = 'https://codahosted.io/blobs/' + blobId;
+    window.open(url, '_blank', 'noopener');
+  }
+
+  function closeImgModal(e) {
+    if (e.target === document.getElementById('imgModal')) {
+      document.getElementById('imgModal').classList.remove('open');
+    }
+  }
+
+  // ── UPDATE DETAIL POPUP ──────────────────────────────
+  function openUpdateModal(i) {
+    const u = filteredUpdates[i];
+    if (!u) return;
+    const richHtml = slateToHtml(u.detailsRaw) || (u.details ? `<p>${esc(u.details)}</p>` : '<p style="color:var(--tt-muted)">No details available.</p>');
+    const linksHtml = buildRelatedLinks(u.relatedLinksRaw, u.relatedLinks);
+    const cats = u.categories.length
+      ? u.categories.map(c => `<span class="update-cat cat-${c}">${c}</span>`).join('')
+      : '<span class="update-cat cat-Other">Other</span>';
+    document.getElementById('updateModalDate').textContent = u.date || '—';
+    document.getElementById('updateModalSubject').textContent = u.subject || '(no subject)';
+    document.getElementById('updateModalCats').innerHTML = cats;
+    document.getElementById('updateModalBody').innerHTML = richHtml + linksHtml;
+    document.getElementById('updateModal').classList.add('open');
+  }
+
+  function closeUpdateModal() {
+    document.getElementById('updateModal').classList.remove('open');
+  }
+
+  // ── INIT ─────────────────────────────────────────────
+  initSettings(); // show settings overlay if credentials are missing
+  initAgentIdentity(); // auto-detect logged-in agent via Granola account
+  thisWeekOnly = false;
+  autoLoadAll(); // fetches all pages sequentially in background — no server-side filter
+</script>
+
+<!-- ── SETTINGS OVERLAY ───────────────────────────────────────────────── -->
+<div id="settingsOverlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:9999; display:flex; align-items:center; justify-content:center;">
+  <div style="background:#fff; border-radius:16px; padding:32px; width:100%; max-width:440px; box-shadow:0 8px 40px rgba(0,0,0,0.2); margin:16px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
+      <span style="font-size:22px;">⚙️</span>
+      <h2 style="margin:0; font-size:18px; font-weight:700; color:#1a1a1a;">Tool Setup</h2>
+    </div>
+    <p style="font-size:13px; color:#666; margin:0 0 24px;">Enter your API credentials below. They are saved in your browser only — never uploaded anywhere.</p>
+
+    <label style="display:block; margin-bottom:16px;">
+      <span style="font-size:12px; font-weight:700; color:#333; display:block; margin-bottom:5px;">Gemini API Key <span style="color:#e53e3e;">*</span></span>
+      <div style="position:relative;">
+        <input type="password" id="s_gemini" placeholder="AIza..." autocomplete="off"
+          style="width:100%; padding:10px 40px 10px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:13px; box-sizing:border-box; font-family:monospace;" />
+        <button onclick="toggleVis('s_gemini')" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:15px;" title="Show/hide">👁</button>
+      </div>
+      <span style="font-size:11px; color:#888;">Get one free at aistudio.google.com/app/apikey</span>
+    </label>
+
+    <label style="display:block; margin-bottom:16px;">
+      <span style="font-size:12px; font-weight:700; color:#333; display:block; margin-bottom:5px;">Coda API Token <span style="color:#e53e3e;">*</span></span>
+      <div style="position:relative;">
+        <input type="password" id="s_coda" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" autocomplete="off"
+          style="width:100%; padding:10px 40px 10px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:13px; box-sizing:border-box; font-family:monospace;" />
+        <button onclick="toggleVis('s_coda')" style="position:absolute;right:8px;top:50%;transform:50%;background:none;border:none;cursor:pointer;font-size:15px;" title="Show/hide">👁</button>
+      </div>
+      <span style="font-size:11px; color:#888;">Get at coda.io/account → API Settings</span>
+    </label>
+
+    <label style="display:block; margin-bottom:24px;">
+      <span style="font-size:12px; font-weight:700; color:#333; display:block; margin-bottom:5px;">Slack Webhook URL <span style="font-weight:400; color:#888;">(optional)</span></span>
+      <input type="password" id="s_slack" placeholder="https://hooks.slack.com/services/..." autocomplete="off"
+        style="width:100%; padding:10px 12px; border:1.5px solid #ddd; border-radius:8px; font-size:13px; box-sizing:border-box; font-family:monospace;" />
+      <span style="font-size:11px; color:#888;">Leave blank — approval button will copy to clipboard instead</span>
+    </label>
+
+    <div id="s_error" style="display:none; color:#e53e3e; font-size:12px; margin-bottom:12px;"></div>
+
+    <button onclick="saveSettings()" style="width:100%; padding:12px; background:#00b050; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer;">
+      Save &amp; Open Tool
+    </button>
+  </div>
+</div>
+</body>
+</html>
